@@ -142,7 +142,6 @@ const Tetris = {
 				this.keysDown[this.Keys.SPACE]
 			);
 		}
-	
 
 		if (this.dropTimer === 0) {
 			this.dropTimer = this.maxDropTimer;
@@ -166,6 +165,8 @@ const Tetris = {
 
 		this.moveTimer--;	
 		this.dropTimer--;
+		TetrisSong.update();
+
 		if (this.shouldRedraw) {
 			this.shouldRedraw = false;
 			this.graphics.draw(this.gameBoard.getBoard()); 

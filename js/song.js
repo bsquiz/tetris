@@ -2,32 +2,42 @@ const TetrisSong = {
 	sineWave: null,
 	currentMusicNote: 0,
 	playing: false,
+	nextNoteTimer: 0,
+	tempo: 200,
 
 	start() {
 		this.playing = true;	
 		this.update();
 	},
 	
-    update() {
-		const currentNote = this.songNotes[this.currentMusicNote];
-		const duration = currentNote.duration * 400;
-		
-		if (this.playing) { 
-				this.currentMusicNote++;
-				if (this.currentMusicNote > this.songNotes.length - 1) {
-					this.currentMusicNote = 0;
-				}
-			if (currentNote.pitch !== this.Pitches.REST) {
-				BAudio.playOscillator(this.sineWave, currentNote.pitch, duration * 0.5);
-			}
+	update() {
+		if (!this.playing) return;
+		if (this.nextNoteTimer > 0) {
+			this.nextNoteTimer--;
+
+			return;
 		}
 
-        window.setTimeout(
-            () => {
-                TetrisSong.update();
-            },
-            duration
-        );
+		const currentNote = this.songNotes[this.currentMusicNote];
+		// covert to fraction of a second
+		const duration = currentNote.duration * 1000;
+
+		// convert to framerate time (seconds / framerate)
+		this.nextNoteTimer = duration / 60;
+		
+		this.currentMusicNote++;
+
+		if (this.currentMusicNote > this.songNotes.length - 1) {
+			this.currentMusicNote = 0;
+		}
+
+		if (currentNote.pitch !== this.Pitches.REST) {
+			BAudio.playOscillator(
+				this.sineWave,
+				currentNote.pitch,
+				currentNote.duration * this.tempo 
+			);
+		}
     },
 
 	init() {	
