@@ -11,10 +11,6 @@ class GameBoard {
 		return new Array(this.cols).fill(0);
 	}
 
-	previewPieceDrop(piece) {
-
-	}
-
 	mergePieceToBoard(piece) {
 		const mapping = piece.getGameBoardMapping();
 		const type = piece.getType();
@@ -26,9 +22,10 @@ class GameBoard {
 
 	checkClear() {
 		const rowsToClear = [];
-		let firstRowToClear = 0;
 
-		for (let i=this.board.length - 1; i>0; i--) {
+		return rowsToClear;
+
+		for (let i=0; i<this.board.length; i++) {
 			const row = this.board[i];
 			let totalCount = 0;
 
@@ -40,19 +37,17 @@ class GameBoard {
 
 			if (totalCount === this.cols) {
 				rowsToClear.push(i);
-				firstRowToClear = i;
+			
+				/*
+				Work backwards to first row,
+				swapping cleared row with row before it.
+				*/	
+				for (let j=i; j>0; j--) {
+					this.board[j] = this.board[j-1];
+				}
 			}
 		}
-
-		for (let i=0; i<rowsToClear.length; i++) {
-//			this.board[rowsToClear[i]] = this.createEmptyRow();
-		}
-
-		for (let j=firstRowToClear; j>0; j--) {
-			this.board[j] = this.board[j-1]; 
-			//this.board[j] = this.createEmptyRow();
-		}
-
+	
 		return rowsToClear;
 	}
 
@@ -61,7 +56,8 @@ class GameBoard {
 			this.board.push(this.createEmptyRow());
 		}
 		for (let i=0; i<this.cols - 2; i++) {
-			this.board[this.rows - 2][i] = 1;
+//			this.board[this.rows - 2][i] = 1;
+//			this.board[this.rows - 3][i] = 1;
 		}
 	}
 }

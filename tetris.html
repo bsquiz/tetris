@@ -1,22 +1,38 @@
 <html>
 	<head>
 		<title>tetris</title>
+		<link rel="stylesheet" href="tetris.css">
 	</head>
 
 	<body>
 		<div id="wrapper">
 			<div>
-				<canvas class="gray-border" id="gameCanvas" width="250" height="600"></canvas>
-				<div id="mobileButton">
-				<button id="leftBtn"><-</button>
-				<button id="rightBtn">-></button>
-				<button>spin</button>
-				<button onclick="Tetris.init()">start</button>
+				<div class="p gray-border">
+				left / right = <- -> 
+				<br>
+				rotate = ^ 
+				<br>
+				drop = | 
+				<br>
+				hard drop = spacebar
 				</div>
 			</div>
+
+			<div class="m-x">
+				<canvas id="backgroundCanvas" width="250" height="600"></canvas>
+				<canvas id="gameCanvas" class="gray-border" width="250" height="600"></canvas>
+				<div>
+						<button id="leftBtn"><-</button>
+						<button id="rightBtn">-></button>
+						<button>spin</button>
+						<button onclick="Tetris.init()">start</button>
+						<button onclick="Tetris.pause()">pause</button>
+						<button onclick="Tetris.start()">play</button>
+				</div>
+			</div>
+			
 			<div id="hud">
-		
-				<div class="margin-bottom gray-border">	
+				<div class="p margin-bottom gray-border">	
 				<div>Score</div>
 				<div id="scoreVal"></div>
 				<p>Level</p>
@@ -35,107 +51,7 @@
 		<script src="js/game.js"></script>
 		<script src="js/graphics.js"></script>
 		<script src="js/audio.js"></script>
-		<script src="js/song.js"></script>
-		<script>
-			function updateGame() {
-				Tetris.update();
-	
-				window.requestAnimationFrame(updateGame);
-			}
-
-			function $on($el, event, callback) {
-				$el.addEventListener(event, callback);
-			}
-
-			function addGameEventListeners() {
-				const $leftBtn = document.getElementById('leftBtn');
-				const $rightBtn = document.getElementById('rightBtn');
-
-				$on($leftBtn, "mousedown", function(e) {
-					Tetris.setKeyDown(Tetris.Keys.LEFT, true);
-				});
-
-				$on($leftBtn, "mouseup", function(e) {
-					Tetris.setKeyDown(Tetris.Keys.LEFT, false);
-				});
-				$on($rightBtn, "mousedown", function(e) {
-					Tetris.setKeyDown(Tetris.Keys.LEFT, true);
-				});
-				$rightBtn.addEventListener("mouseup", function(e) {
-					Tetris.setKeyDown(Tetris.Keys.LEFT, false);
-				});
-				
-				$on(window, "keydown", function(e) {
-					Tetris.setKeyDown(e.keyCode, true);
-				});
-				$on(window, "keyup", function(e) {
-					Tetris.setKeyDown(e.keyCode, false);
-				});
-			}
-			function startGame() {
-				Tetris.init();
-				TetrisGraphics.init();
-				window.requestAnimationFrame(updateGame);
-			}
-			window.onload = function() {
-				addGameEventListeners();
-				startGame();
-			}
-		</script>
-		<style>
-			/* darkest #111111 */
-			/* dark #333333 */
-			/* light #555555 */
-			/* lightest #999999 */
-			body {
-				background: #111111;
-				color: #111111;
-			}
-			canvas {
-				padding: 5px;
-			}
-			.hud-section {
-				padding: 5px;
-			}
-			.gray-border {
-				border: solid 5px;
-				border-color: #333333;
-			}
-
-			.hud-section-inner {
-				padding: 5px;
-			}
-			#wrapper {
-				width: 500px;
-				height: 600px; 
-				margin: auto;
-				display: flex;
-			}
-			#hud {
-				display: flex;
-				flex-direction: column;
-				text-transform: uppercase;
-				text-align: center;
-				margin-left: 5px;
-				color: white;
-			}
-			#mobileButtons {
-				display: none;
-			}
-			.rounded {
-				border-radius: 5px;
-			}
-			.border-left-0 {
-				border-left: none;
-			}
-			.margin-bottom {
-				margin-bottom: 5px;
-			}
-			@media (max-width: 640px) {
-				#mobileButtons {
-					display: block;
-				}
-			}
-		</style>	
+		<script src="js/musicPlayer.js"></script>
+		<script src="js/init.js"></script>
 	</body>
 </html>

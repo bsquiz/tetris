@@ -1,0 +1,56 @@
+/* darkest #111111 */
+/* dark #333333 */
+/* light #555555 */
+/* lightest #999999 */
+body {
+	background: #111111;
+	color: white;
+}
+.hud-section {
+	padding: 5px;
+}
+.gray-border {
+	border: solid 5px;
+	border-color: #333333;
+}
+.m-x {
+	margin: 0 5px;
+}
+.p {
+	padding: 5px;
+}
+.hud-section-inner {
+	padding: 5px;
+}
+#wrapper {
+	width: 500px;
+	height: 600px;
+	margin: auto;
+	display: flex;
+}
+#backgroundCanvas {
+	display: none;
+}
+#hud {
+	display: flex;
+	flex-direction: column;
+	text-transform: uppercase;
+	text-align: center;
+}
+#mobileButtons {
+	display: none;
+}
+.rounded {
+	border-radius: 5px;
+}
+.border-left-0 {
+	border-left: none;
+}
+.margin-bottom {
+	margin-bottom: 5px;
+}
+@media (max-width: 640px) {
+	#mobileButtons {
+		display: block;
+	}
+}

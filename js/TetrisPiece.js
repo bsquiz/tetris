@@ -118,7 +118,7 @@ class TetrisPiece {
 						[0,0],
 						[1,0],
 						[0,1],
-						[-1,2]
+						[-1,1]
 					],[
 						// [][]
 						//   [][]
@@ -131,9 +131,9 @@ class TetrisPiece {
 						// [][]
 						// []
 						[0,0],
-						[-1,0],
+						[1,0],
 						[0,1],
-						[-1,2]
+						[-1,1]
 					]
 				];
 			break;
@@ -323,21 +323,17 @@ class TetrisPiece {
 			const row = transformOrigin[0] + t[0] + 1;
 			const col = transformOrigin[1] + t[1];
 
-			if (row === gameboard.length - 1) {
+			if (row === gameboard.length) {
 				// at bottom of gameboard, stop
 				return true;
 			}
-	
-			if(gameboard[row] === undefined) {	
-				console.log(this.type);
-				console.log(transformOrigin);
-				console.log(`row ${row} col ${col}`);
-			}
+			
 			if (gameboard[row][col] !== 0) {
 				// piece below, stop
 				return true;
 			}
 		}
+
 		return false;
 	}
 		
@@ -382,6 +378,8 @@ class TetrisPiece {
 
 		this.origin[1]--;
 		this.dropPreviewOrigin[1]--;
+
+		return true;
 	}
 	
 	moveRight(max) {
@@ -393,6 +391,8 @@ class TetrisPiece {
 
 		this.origin[1]++;
 		this.dropPreviewOrigin[1]++;
+		
+		return true;
 	}
 
 	rotate(max) {
@@ -404,22 +404,31 @@ class TetrisPiece {
 			this.rotation = 0;
 		}
 
-		for (let i=0; i<this.transform.length; i++) {
-			this.transform[i][0] = this.rotations[this.rotation][i][0];
-			this.transform[i][1] = this.rotations[this.rotation][i][1];
-			
-			if (this.transform[i][1] < 0) {
-				bounceAmount++;
-			}
-
-			if (this.transform[i][1] > max) {
-				bounceAmount--;
-			}
-		}
-
+		
+		this.transform = this.rotations[this.rotation];
+		
 		// wall bounce
-		for (let i=0; i<this.transform.length; i++) {
-			this.transform[i][1] += bounceAmount;
+		let tmpBounce = 0;
+		this.transform.forEach(t => {
+			if (t[1] < 0) {
+				tmpBounce = t[1] * 1;
+
+				if (tmpBounce > bounceAmount) {
+					bounceAmount = tmpBounce;
+				}
+			} else if (t[1] > max) {
+				tmpBounce = t[1] * -1;
+
+				if (tmpBounce < bounceAmount) {
+					bounceAmount = tmpBounce;
+				}
+			}
+		});
+
+		if (bounceAmount !== 0) {
+			this.transform.forEach(t => {
+				t[1] += bounceAmount;
+			});
 		}
 	}
 }

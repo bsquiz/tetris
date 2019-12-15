@@ -1,4 +1,5 @@
 const Tetris = {
+	isRunning: false,
 	rows: 24,
 	cols: 10,
 	gameBoard: null,
@@ -34,7 +35,9 @@ const Tetris = {
 		UP: 38,
 		SPACE: 32 
 	},
-	canDropPiece: false,
+	availablePieces: [],
+	canDropPiece: true,
+	canRotatePiece: true,
 	nextPiece: {},
 	shouldCheckClear: true,
 	shouldRedraw: true,
@@ -47,23 +50,26 @@ const Tetris = {
 		BAudio.playOscillator(oscillator, freq, duration, vol);
 	},
 
-	playPieceMoveSnd() {
-		this.playOscillator(this.sineWave, 500);
-	},
-	
 	playPieceRotateSnd() {
 		this.playOscillator(this.sineWave, 500);
 	},
 
 	setKeyDown(key, val) {
-		if (key === this.Keys.SPACE && val === false) {
-			this.canDropPiece = true;
+		if (val === false) {
+			if (key === this.Keys.SPACE) {
+				this.canDropPiece = true;
+			}
+			
+			if (key === this.Keys.UP) {
+				this.canRotatePiece = true;
+			}
 		}
+
 		this.keysDown[key] = val;
 	},
 
-	calculateClearScore() {
-		return 100;
+	calculateClearScore(hardDrop = false, numLinesCleared = 1) {
+		return 100 * (hardDrop ? 2 : 1) * numLinesCleared;
 	},
 
 	movePieceDown(piece) {
@@ -86,20 +92,23 @@ const Tetris = {
 
 		if (this.dropDebounceTimer > 0) this.dropDebounceTimer--;
 	
-		if (moveLeft) {
-			piece.moveLeft(0);
-			this.playPieceMoveSnd();
+		if (moveLeft && !moveRight) {
+			if (piece.moveLeft(0)) {
+				this.playOscillator(this.sineWave, 400, 50);
+			}
 		}
-		if (moveRight) {
-			piece.moveRight(this.cols - 1);
-			this.playPieceMoveSnd();
+		if (moveRight && !moveLeft) {
+			if(piece.moveRight(this.cols - 1)) {
+				this.playOscillator(this.sineWave, 400, 50);
+			}
 		}
 		if (moveDown) {
 			this.movePieceDown(piece);	
 		}
-		if (moveUp) {
+		if (moveUp && !moveLeft && !moveRight && this.canRotatePiece) {
+			this.canRotatePiece = false;
 			piece.rotate(this.cols - 1);
-			this.playPieceRotateSnd();
+			this.playOscillator(this.sineWave, 300);
 		}
 
 		if (drop && this.canDropPiece) {
@@ -115,21 +124,37 @@ const Tetris = {
 	},
 
 	createNewPiece() {
-		const r = Math.ceil(Math.random() * 6);
+		const r = Math.floor(Math.random() * 6);
 	
-		return new TetrisPiece(r);
+		return this.availablePieces[r];
+	},
+
+	makeNextPiece(excludePieceType) {
+		let newPiece = this.createNewPiece();
+
+//		while(newPiece.getType() === excludePieceType) {
+//			newPiece = this.createNewPiece();
+//		}
+		
+		return newPiece;
 	},
 
 	startNextPiece() {
+		const oldPieceType = this.currentPiece.getType();
+
 		this.currentPiece = this.nextPiece;
-		this.nextPiece = this.createNewPiece();
+		this.nextPiece = this.makeNextPiece(oldPieceType);
 		this.graphics.setCurrentPiece(this.currentPiece);
 		this.graphics.setNextPiece(this.nextPiece);
 		this.currentPiece.updatePreviewDrop(this.gameBoard.getBoard());
 	},
 
 	update() {
+		if (!this.isRunning) return;
+
 		let rowsToClear = 0;
+		let isHardDrop = false;
+
 		if (this.moveTimer === 0) {
 			this.moveTimer = this.maxMoveTimer;
 
@@ -141,6 +166,8 @@ const Tetris = {
 				this.keysDown[this.Keys.UP],
 				this.keysDown[this.Keys.SPACE]
 			);
+
+			isHardDrop = this.keysDown[this.Keys.DOWN] && this.canDropPiece;
 		}
 
 		if (this.dropTimer === 0) {
@@ -152,7 +179,7 @@ const Tetris = {
 				rowsToClear = this.gameBoard.checkClear();
 				if (rowsToClear.length > 0) {
 					this.shouldRedraw = true;
-					this.score += rowsToClear.length * this.calculateClearScore();
+					this.score += this.calculateClearScore(isHardDrop, rowsToClear.length);
 					this.clearedLines += rowsToClear.length;
 		
 					this.graphics.setScore(this.score);
@@ -165,11 +192,11 @@ const Tetris = {
 
 		this.moveTimer--;	
 		this.dropTimer--;
-		TetrisSong.update();
+		BMusicPlayer.update();
 
 		if (this.shouldRedraw) {
 			this.shouldRedraw = false;
-			this.graphics.draw(this.gameBoard.getBoard()); 
+			this.graphics.draw(); 
 		}
 	},
 
@@ -179,20 +206,37 @@ const Tetris = {
 		if (this.sineWave === null) {
 			this.sineWave = BAudio.createOscillator(BAudio.Oscillators.SINE);
 			
-			TetrisSong.init();			
-			TetrisSong.start();
+	//		TetrisSong.init();			
+			//TetrisSong.start();
 		}
+	},
+
+	start() {
+		this.isRunning = true;
+	},
+
+	pause() {
+		this.isRunning = false;
 	},
 	
 	init() {
+		this.availablePieces = [
+			new TetrisPiece(1),
+			new TetrisPiece(2),
+			new TetrisPiece(3),
+			new TetrisPiece(4),
+			new TetrisPiece(5),
+			new TetrisPiece(6)
+		];
 		this.gameBoard = new GameBoard(this.rows, this.cols);
 		this.gameBoard.init();
 
-		this.currentPiece = this.createNewPiece();
-		this.nextPiece = this.createNewPiece();
+		this.currentPiece = this.makeNextPiece(0);
+		this.nextPiece = this.makeNextPiece(this.currentPiece.getType());
 		this.currentPiece.updatePreviewDrop(this.gameBoard.getBoard());
 
 		this.graphics = TetrisGraphics;
+		this.graphics.init(this.gameBoard.getBoard());
 		this.graphics.setCurrentPiece(this.currentPiece);
 		this.graphics.setNextPiece(this.nextPiece);
 		this.initAudio();

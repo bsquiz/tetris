@@ -10,6 +10,7 @@ const TetrisGraphics = {
 	score: 0,
 	level: 1,
 	lines: 0,
+	gameBoard: {},
 	$score: document.getElementById('scoreVal'),
 	$level: document.getElementById('levelVal'),
 	$lines: document.getElementById('linesVal'),
@@ -74,15 +75,48 @@ const TetrisGraphics = {
 		this.$lines.innerHTML = this.lines;
 	},
  
-	drawGameBoard(board) {
+	drawGameBoard() {
 		let x = 0;
 		let y = 0;
 
-		board.forEach(row => {
+		this.gameBoard.forEach(row => {
 			row.forEach(col => {
-				this.ctx.fillStyle = this.PieceColors[col];
-				this.ctx.fillRect(x, y, this.colWidth, this.colHeight);
-				this.ctx.strokeRect(x, y, this.colWidth, this.colHeight);
+				if (col !== 0) { 
+					this.ctx.fillStyle = this.PieceColors[col];
+					this.ctx.fillRect(x, y, this.colWidth, this.colHeight);
+			
+					x += this.colWidth;
+				}
+			});
+
+			y += this.colHeight;
+			x = 0;
+		});
+	},
+
+	draw() {
+		this.ctx.strokeStyle = '#575757';
+		this.ctx.clearRect(0, 0, this.width, this.height);
+		this.nextPieceCtx.clearRect(0, 0, this.nextPieceWidth, this.nextPieceHeight);
+		this.drawGameBoard();
+
+		this.ctx.strokeStyle = 'white';
+		this.drawPiece(this.currentPiece, this.ctx);
+		this.drawPiece(this.nextPiece, this.nextPieceCtx, true);
+		this.drawHUD();
+	},
+
+	initBackground() {
+		const $backgroundCanvas = document.getElementById('backgroundCanvas');
+		const ctx = $backgroundCanvas.getContext('2d');
+		let x = 0;
+		let y = 0;
+
+		ctx.strokeStyle = '#575757';
+
+		this.gameBoard.forEach(row => {
+			row.forEach(col => {
+				ctx.strokeRect(x, y, this.colWidth, this.colHeight);
 		
 				x += this.colWidth;
 			});
@@ -92,22 +126,11 @@ const TetrisGraphics = {
 		});
 	},
 
-	draw(gameboard) {
-		this.ctx.strokeStyle = '#575757';
-		this.ctx.clearRect(0, 0, this.width, this.height);
-		this.nextPieceCtx.clearRect(0, 0, this.nextPieceWidth, this.nextPieceHeight);
-		this.drawGameBoard(gameboard);
-
-		this.ctx.strokeStyle = 'white';
-		this.drawPiece(this.currentPiece, this.ctx);
-		this.drawPiece(this.nextPiece, this.nextPieceCtx, true);
-		this.drawHUD();
-	},
-
-	init() {
+	init(board) {
 		const $canvas = document.getElementById("gameCanvas");
 		const $nextPieceCanvas = document.getElementById("nextPieceCanvas");
 	
+		this.gameBoard = board;
 		this.width = $canvas.width;
 		this.height = $canvas.height;
 		this.ctx = $canvas.getContext("2d");
@@ -126,5 +149,7 @@ const TetrisGraphics = {
 		this.PieceColors[Tetris.PieceTypes.Z] = "yellow";
 		this.PieceColors[Tetris.PieceTypes.TRIANGLE] = "purple";
 		this.PieceColors[Tetris.PieceTypes.S] = "orange"
+
+		this.initBackground();
 	}
 };
