@@ -18,7 +18,7 @@ const TetrisSong = {
 		},{
 			pitch: 'B4',
 			duration: 0.5
-	},{
+		},{
 			pitch: 'A4',
 			duration: 1
 		},{
@@ -138,7 +138,7 @@ const TetrisSong = {
 			pitch: 'GS4',
 			duration: 4
 		}]
-		};
+		},
 		bassParts: {
 			"A": [{
 				pitch: 'GS4',
@@ -179,29 +179,47 @@ const TetrisSong = {
 				duration: 4
 			}]
 	},
+	drumParts: {
+		A: [{
+			pitch: 'C3',
+			duration: 1
+		},{
+			pitch: 'C3',
+			duration: 1
+		},{
+			pitch: 'C3',
+			duration: 0.5
+		},{
+			pitch: 'C3',
+			duration: 0.5
+		}]
+	},
 
 	getTracks() {
 		return {
 			TREBLE: [
-				trebleParts.A,
-				trebleParts.B,
-				trebleParts.C,
-				trebleParts.B,
+				this.trebleParts.A,
+				this.trebleParts.B,
+				this.trebleParts.C,
+				this.trebleParts.B,
 
-				trebleParts.A,
-				trebleParts.B,
-				trebleParts.C,
-				trebleParts.B,
+				this.trebleParts.A,
+				this.trebleParts.B,
+				this.trebleParts.C,
+				this.trebleParts.B,
 
-				trebleParts.D,
-				trebleParts.E,
-				trebleParts.D,
-				trebleParts.F
+				this.trebleParts.D,
+				this.trebleParts.E,
+				this.trebleParts.D,
+				this.trebleParts.F
 			].flat(),
 			BASS: [
-				bassParts.A,
-				bassParts.B,
-				bassParts.B	
+				this.bassParts.A,
+				this.bassParts.B,
+				this.bassParts.B	
+			].flat(),
+			DRUM: [
+				this.drumParts.A
 			].flat()
 		}
 	}

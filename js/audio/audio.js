@@ -5,7 +5,25 @@ const BAudio = {
 		SINE: "sine",
 		SQUARE: "square",
 		TRIANGLE: "triangle",
-		SAWTOOTH: "sawtooth"
+		SAWTOOTH: "sawtooth",
+		NOISE: "noise"
+	},
+	createNoiseOutput() {
+		const real = new Float32Array(2);
+		const imag = new Float32Array(2);
+
+		real[0] = 0;
+		imag[0] = 0;
+		real[0] = 1;
+		imag[0] = 0;
+
+		const wave = this.ctx.createPeriodicWave(	
+			real,
+			imag,
+			{ disableNormalization: true }
+		);
+		
+		return wave;
 	},
 	createOscillator(type) {
 		const ctx = new AudioContext();
@@ -15,6 +33,11 @@ const BAudio = {
 		oscillator.type = type;
 		oscillator.start();
 		gain.gain.value = 0;
+		
+		if (type === this.Oscillators.NOISE) {
+			oscillator.setPeriodicWave(this.createNoiseOutput());
+		}
+
 		oscillator.connect(gain);
 		gain.connect(ctx.destination);
 		return {
