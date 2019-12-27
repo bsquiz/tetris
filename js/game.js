@@ -96,9 +96,9 @@ const Tetris = {
 		const origin = piece.getOrigin();
 
 		if (this.dropDebounceTimer > 0) this.dropDebounceTimer--;
-	
+
 		if (moveLeft && !moveRight) {
-			if (piece.moveLeft(0)) {
+			if (piece.moveLeft(0, this.gameBoard.getBoard())) {
 				if (this.audioInitialized) {
 					TetrisSoundEffects.playMoveSound();
 				}
@@ -106,7 +106,7 @@ const Tetris = {
 		}
 
 		if (moveRight && !moveLeft) {
-			if(piece.moveRight(this.cols - 1)) {
+			if(piece.moveRight(this.cols - 1, this.gameBoard.getBoard())) {
 				TetrisSoundEffects.playMoveSound();
 			}
 		}

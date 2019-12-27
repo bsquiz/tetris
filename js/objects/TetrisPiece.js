@@ -369,9 +369,15 @@ class TetrisPiece {
 		return false;
 	}
 
-	moveLeft(min) {
+	moveLeft(min, gameboard) {
+		let newX;
+		let y;
+
 		for (let i=0; i<this.transform.length; i++) {
-			if (this.origin[1] + this.transform[i][1] - 1 < min) {
+			newX = this.origin[1] + this.transform[i][1] - 1;
+			y = this.origin[0] + this.transform[i][0];
+
+			if (newX < min || gameboard[y][newX] !== Tetris.PieceTypes.EMPTY) {
 				return false;
 			}
 		}
@@ -382,9 +388,15 @@ class TetrisPiece {
 		return true;
 	}
 	
-	moveRight(max) {
+	moveRight(max, gameboard) {
+		let newX;
+		let y;
+
 		for (let i=0; i<this.transform.length; i++) {
-			if (this.origin[1] + this.transform[i][1] + 1 > max) {
+			newX = this.origin[1] + this.transform[i][1] + 1;
+			y = this.origin[0] + this.transform[i][0];
+
+			if (newX > max || gameboard[y][newX] !== Tetris.PieceTypes.EMPTY) {
 				return false;
 			}
 		}
