@@ -2,9 +2,9 @@ const Tetris = {
 	isRunning: false,
 	rows: 24,
 	cols: 10,
-	gameBoard: null,
 	score: 0,
 	clearedLines: 0,
+	gameBoard: null,
 	currentPiece: {}, 
 	dropDebounceTimer: 10,
 	MAX_DROP_DEBOUNCE_TIMER: 5,
@@ -12,6 +12,20 @@ const Tetris = {
 	maxDropTimer: 30,
 	moveTimer: 8,
 	maxMoveTimer: 8,
+	availablePieces: [],
+	canDropPiece: true,
+	canRotatePiece: true,
+	nextPiece: {},
+	shouldRedraw: true,
+	audioInitialized: false,
+	keysDown: {
+		32: false,
+		37: false,
+		39: false,
+		40: false,
+		38: false
+	},
+
 	PieceTypes: {
 		"EMPTY": 0,
 		"SQUARE": 1,
@@ -21,37 +35,12 @@ const Tetris = {
 		"TRIANGLE": 5,
 		"S": 6
 	},
-	keysDown: {
-		32: false,
-		37: false,
-		39: false,
-		40: false,
-		38: false
-	},
 	Keys: {
 		LEFT: 37,
 		RIGHT: 39,
 		DOWN: 40,
 		UP: 38,
 		SPACE: 32 
-	},
-	availablePieces: [],
-	canDropPiece: true,
-	canRotatePiece: true,
-	nextPiece: {},
-	shouldCheckClear: true,
-	shouldRedraw: true,
-	audioInitialized: false,
-	sineWave: null,
-
-	playOscillator(oscillator, freq = 100, duration = 100, vol = 0.1) {
-		if (!this.audioInitialized) return;
-		
-		BAudio.playOscillator(oscillator, freq, duration, vol);
-	},
-
-	playPieceRotateSnd() {
-		this.playOscillator(this.sineWave, 500);
 	},
 
 	setKeyDown(key, val) {
@@ -72,12 +61,28 @@ const Tetris = {
 		return 100 * (hardDrop ? 2 : 1) * numLinesCleared;
 	},
 
+	createNewPiece() {
+		const r = Math.floor(Math.random() * 6);
+	
+		return this.availablePieces[r];
+	},
+
+	makeNextPiece(excludePieceType) {
+		let newPiece = this.createNewPiece();
+
+//		while(newPiece.getType() === excludePieceType) {
+//			newPiece = this.createNewPiece();
+//		}
+		
+		return newPiece;
+	},
+
 	movePieceDown(piece) {
 		if (piece.moveDown(this.gameBoard.getBoard())) {
 			return true;
 		}
 
-		this.playOscillator(this.sineWave, 1000, 25);
+		TetrisSoundEffects.playDropSound();
 
 		return false;
 	},
@@ -94,21 +99,26 @@ const Tetris = {
 	
 		if (moveLeft && !moveRight) {
 			if (piece.moveLeft(0)) {
-				this.playOscillator(this.sineWave, 400, 50);
+				if (this.audioInitialized) {
+					TetrisSoundEffects.playMoveSound();
+				}
 			}
 		}
+
 		if (moveRight && !moveLeft) {
 			if(piece.moveRight(this.cols - 1)) {
-				this.playOscillator(this.sineWave, 400, 50);
+				TetrisSoundEffects.playMoveSound();
 			}
 		}
+
 		if (moveDown) {
 			this.movePieceDown(piece);	
 		}
+
 		if (moveUp && !moveLeft && !moveRight && this.canRotatePiece) {
 			this.canRotatePiece = false;
 			piece.rotate(this.cols - 1);
-			this.playOscillator(this.sineWave, 300);
+			TetrisSoundEffects.playRotateSound();
 		}
 
 		if (drop && this.canDropPiece) {
@@ -121,22 +131,6 @@ const Tetris = {
 		}
 
 		return (moveLeft || moveRight || moveDown || moveUp || drop);
-	},
-
-	createNewPiece() {
-		const r = Math.floor(Math.random() * 6);
-	
-		return this.availablePieces[r];
-	},
-
-	makeNextPiece(excludePieceType) {
-		let newPiece = this.createNewPiece();
-
-//		while(newPiece.getType() === excludePieceType) {
-//			newPiece = this.createNewPiece();
-//		}
-		
-		return newPiece;
 	},
 
 	startNextPiece() {
@@ -177,38 +171,37 @@ const Tetris = {
 				this.gameBoard.mergePieceToBoard(this.currentPiece);
 				this.startNextPiece();
 				rowsToClear = this.gameBoard.checkClear();
+
 				if (rowsToClear.length > 0) {
-					this.shouldRedraw = true;
 					this.score += this.calculateClearScore(isHardDrop, rowsToClear.length);
 					this.clearedLines += rowsToClear.length;
 		
-					this.graphics.setScore(this.score);
-					this.graphics.setLines(this.clearedLines);
-					this.graphics.drawHUD();
+					TetrisHUD.draw(this.score, this.clearedLines, this.level);
 				}
 			}
+
 			this.shouldRedraw = true;
 		}
 
-		this.moveTimer--;	
+		this.moveTimer--;
 		this.dropTimer--;
-		BMusicPlayer.update();
 
 		if (this.shouldRedraw) {
 			this.shouldRedraw = false;
-			this.graphics.draw(); 
+			TetrisGraphics.draw(this.currentPiece); 
+		}
+
+		if (this.audioInitialized) {
+			BMusicPlayer.update();
 		}
 	},
 
 	initAudio() {
 		this.audioInitialized = true;
-		
-		if (this.sineWave === null) {
-			this.sineWave = BAudio.createOscillator(BAudio.Oscillators.SINE);
 			
-	//		TetrisSong.init();			
-			//TetrisSong.start();
-		}
+		TetrisSoundEffects.init();	
+		BMusicPlayer.init(TetrisSong);			
+		BMusicPlayer.start();
 	},
 
 	start() {
@@ -235,10 +228,8 @@ const Tetris = {
 		this.nextPiece = this.makeNextPiece(this.currentPiece.getType());
 		this.currentPiece.updatePreviewDrop(this.gameBoard.getBoard());
 
-		this.graphics = TetrisGraphics;
-		this.graphics.init(this.gameBoard.getBoard());
-		this.graphics.setCurrentPiece(this.currentPiece);
-		this.graphics.setNextPiece(this.nextPiece);
+		TetrisGraphics.init(this.rows, this.cols);
+		TetrisHUD.drawNextPiece(this.nextPiece);
 		this.initAudio();
 	}
 };
