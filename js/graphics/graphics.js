@@ -15,17 +15,13 @@ const TetrisGraphics = {
 	drawPiece(piece) {
 		const origin = piece.getOrigin();
 		const t = piece.getTransform();
-		const transformXOffset = t[1] * this.colWidth;
-		const transformYOffset = t[0] * this.colHeight;
 		const dropPreviewOrigin = piece.getDropPreviewOrigin();
-		let ox = origin[1];
-		let oy = origin[0];
 
 		this.ctx.fillStyle = this.PieceColors[piece.getType()];
 
 		t.forEach(transform => {
-			const x = this.SquareDrawX(ox, transform[1]);
-			const y = this.SquareDrawY(oy, transform[0]);
+			const x = this.SquareDrawX(origin[1], transform[1]);
+			const y = this.SquareDrawY(origin[0], transform[0]);
 			const px = this.SquareDrawX(dropPreviewOrigin[1], transform[1]);
 			const py = this.SquareDrawY(dropPreviewOrigin[0], transform[0]);
 
@@ -45,18 +41,18 @@ const TetrisGraphics = {
 	},
 
 	/* draws filled pieces that have fallen */ 
-	drawGameBoard() {
+	drawGameBoard(gameBoard) {
 		let x = 0;
 		let y = 0;
 
-		this.gameBoard.forEach(row => {
+		gameBoard.forEach(row => {
 			row.forEach(col => {
 				if (col !== 0) { 
 					this.ctx.fillStyle = this.PieceColors[col];
 					this.ctx.fillRect(x, y, this.colWidth, this.colHeight);
-			
-					x += this.colWidth;
 				}
+
+				x += this.colWidth;
 			});
 
 			y += this.colHeight;
@@ -92,10 +88,10 @@ const TetrisGraphics = {
 		ctx.stroke();
 	},
 
-	draw(currentPiece) {
+	draw(currentPiece, gameBoard) {
 		this.ctx.clearRect(0, 0, this.width, this.height);
 
-		this.drawGameBoard();
+		this.drawGameBoard(gameBoard);
 		this.drawPiece(currentPiece);
 	},
 

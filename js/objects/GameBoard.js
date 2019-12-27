@@ -55,6 +55,7 @@ class GameBoard {
 		for(let i=0; i<this.rows; i++) {
 			this.board.push(this.createEmptyRow());
 		}
+
 		for (let i=0; i<this.cols - 2; i++) {
 //			this.board[this.rows - 2][i] = 1;
 //			this.board[this.rows - 3][i] = 1;

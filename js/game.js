@@ -138,9 +138,8 @@ const Tetris = {
 
 		this.currentPiece = this.nextPiece;
 		this.nextPiece = this.makeNextPiece(oldPieceType);
-		this.graphics.setCurrentPiece(this.currentPiece);
-		this.graphics.setNextPiece(this.nextPiece);
 		this.currentPiece.updatePreviewDrop(this.gameBoard.getBoard());
+		TetrisHUD.drawNextPiece(this.nextPiece);
 	},
 
 	update() {
@@ -188,7 +187,7 @@ const Tetris = {
 
 		if (this.shouldRedraw) {
 			this.shouldRedraw = false;
-			TetrisGraphics.draw(this.currentPiece); 
+			TetrisGraphics.draw(this.currentPiece, this.gameBoard.getBoard()); 
 		}
 
 		if (this.audioInitialized) {

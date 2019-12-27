@@ -3,7 +3,7 @@ const TetrisSoundEffects = {
                 BAudio.playOscillator(oscillator, freq, duration, vol);
         },
 
-	playPieceRotateSound() {
+	playRotateSound() {
 		this.playOscillator(this.sineWave, 500);
 	},
 	
