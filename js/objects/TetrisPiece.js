@@ -415,32 +415,22 @@ class TetrisPiece {
 		if (this.rotation > 3) {
 			this.rotation = 0;
 		}
-
 		
 		this.transform = this.rotations[this.rotation];
 		
 		// wall bounce
-		let tmpBounce = 0;
 		this.transform.forEach(t => {
-			if (t[1] < 0) {
-				tmpBounce = t[1] * 1;
+			let tempX = this.origin[1] + t[1];
 
-				if (tmpBounce > bounceAmount) {
-					bounceAmount = tmpBounce;
-				}
-			} else if (t[1] > max) {
-				tmpBounce = t[1] * -1;
-
-				if (tmpBounce < bounceAmount) {
-					bounceAmount = tmpBounce;
-				}
+			if (tempX < 0) {
+				bounceAmount++;
+			} else if (tempX > max) {
+				bounceAmount--;
 			}
 		});
 
 		if (bounceAmount !== 0) {
-			this.transform.forEach(t => {
-				t[1] += bounceAmount;
-			});
+			this.origin[1] += bounceAmount;
 		}
 	}
 }
