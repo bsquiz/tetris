@@ -61,17 +61,13 @@ const Tetris = {
 		return 100 * (hardDrop ? 2 : 1) * numLinesCleared;
 	},
 
-	createNewPiece() {
-		const r = Math.floor(Math.random() * 6);
-	
-		return this.availablePieces[r];
-	},
-
 	makeNextPiece(excludePieceType) {
-		let newPiece = this.createNewPiece();
+		const r = Math.floor(Math.random() * 6);
+		let newPiece = this.availablePieces[r];
+		
+		newPiece.reset();
 
 //		while(newPiece.getType() === excludePieceType) {
-//			newPiece = this.createNewPiece();
 //		}
 		
 		return newPiece;

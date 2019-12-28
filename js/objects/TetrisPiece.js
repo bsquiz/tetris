@@ -1,7 +1,6 @@
 class TetrisPiece {
 	constructor(type) {
 		this.type = type;
-		this.origin = [2,5];
 		this.rotation = 0;
 		this.rotations = [];
 	
@@ -11,7 +10,7 @@ class TetrisPiece {
 				[][]
 				[][]
 				*/
-				this.origin = [0,4];
+				this.ogOrigin = [0,4];
 				this.transform = [
 					[0,0],
 					[0,1],
@@ -47,7 +46,7 @@ class TetrisPiece {
 				  [][]
 				[][] <- origin is here
 				*/
-				this.origin = [1,5];
+				this.ogOrigin = [1,5];
 				this.transform = [
 					[0,0],
 					[0,-1],
@@ -101,7 +100,7 @@ class TetrisPiece {
 				[][]
 				  [][] <-- origin is first col on this row
 				*/
-				this.origin = [1,5];
+				this.ogOrigin = [1,5];
 				this.transform = [
 					[0,0],
 					[0,1],
@@ -147,7 +146,7 @@ class TetrisPiece {
 				// [] <-- origin
 				// []
 				// []
-				this.origin = [1,5];
+				this.ogOrigin = [1,5];
 				this.transform = [
 					[0,0],
 					[1,0],
@@ -192,7 +191,7 @@ class TetrisPiece {
 				// []
 				// []
 				// [][] <- origin is 1st
-				this.origin = [2,5];
+				this.ogOrigin = [2,5];
 				this.transform = [
 					[0,0],
 					[0,1],
@@ -236,7 +235,7 @@ class TetrisPiece {
 			case Tetris.PieceTypes.TRIANGLE:
 				//   []
 				// [][][] <-- origin is middle block
-				this.origin = [1, 5];
+				this.ogOrigin = [1, 5];
 				this.transform = [
 					[0,0],
 					[0,-1],
@@ -281,6 +280,7 @@ class TetrisPiece {
 			default: break;
 		}
 
+		this.origin = [this.ogOrigin[0], this.ogOrigin[1]];
 		this.dropPreviewOrigin = [this.origin[0], this.origin[1]];
 		this.ogDropPreviewOrigin = [this.origin[0], this.origin[1]];
 
@@ -340,7 +340,7 @@ class TetrisPiece {
 				return true;
 			}
 			
-			if (gameboard[row][col] !== 0) {
+			if (gameboard[row][col] !== Tetris.PieceTypes.EMPTY) {
 				// piece below, stop
 				return true;
 			}
@@ -363,6 +363,7 @@ class TetrisPiece {
 	}
 
 	updatePreviewDrop(gameboard) {
+		return;
 		this.dropPreviewOrigin[0] = this.ogDropPreviewOrigin[0];
 		this.dropPiece(gameboard, this.dropPreviewOrigin);
 	}
@@ -444,5 +445,11 @@ class TetrisPiece {
 		if (bounceAmount !== 0) {
 			this.origin[1] += bounceAmount;
 		}
+	}
+	
+	reset() {
+		this.origin = [this.ogOrigin[0], this.ogOrigin[1]];
+		this.dropPreviewOrigin = [this.origin[0], this.origin[1]];
+		this.ogDropPreviewOrigin = [this.origin[0], this.origin[1]];
 	}
 }
