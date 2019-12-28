@@ -23,8 +23,6 @@ class GameBoard {
 	checkClear() {
 		const rowsToClear = [];
 
-		return rowsToClear;
-
 		for (let i=0; i<this.board.length; i++) {
 			const row = this.board[i];
 			let totalCount = 0;

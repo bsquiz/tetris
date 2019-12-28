@@ -40,9 +40,9 @@ const TetrisHUD = {
 	},
 
 	drawStats(score, lines, level) {
-		this.$score.innerHTML = this.score;
-		this.$level.innerHTML = this.level;
-		this.$lines.innerHTML = this.lines;
+		this.$score.innerHTML = score;
+		this.$level.innerHTML = level;
+		this.$lines.innerHTML = lines;
 	},
 	
 	init() {

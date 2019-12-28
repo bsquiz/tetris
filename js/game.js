@@ -4,12 +4,13 @@ const Tetris = {
 	cols: 10,
 	score: 0,
 	clearedLines: 0,
+	level: 0,
 	gameBoard: null,
 	currentPiece: {}, 
 	dropDebounceTimer: 10,
 	MAX_DROP_DEBOUNCE_TIMER: 5,
-	dropTimer: 5,
-	maxDropTimer: 5,
+	dropTimer: 30,
+	maxDropTimer: 30,
 	moveTimer: 8,
 	maxMoveTimer: 8,
 	availablePieces: [],
@@ -63,7 +64,7 @@ const Tetris = {
 
 	makeNextPiece(excludePieceType) {
 		const r = Math.floor(Math.random() * 6);
-		let newPiece = this.availablePieces[r];
+		let newPiece = this.availablePieces[0];
 		
 		newPiece.reset();
 
@@ -171,7 +172,7 @@ const Tetris = {
 					this.score += this.calculateClearScore(isHardDrop, rowsToClear.length);
 					this.clearedLines += rowsToClear.length;
 		
-					TetrisHUD.draw(this.score, this.clearedLines, this.level);
+					TetrisHUD.drawStats(this.score, this.clearedLines, this.level);
 				}
 			}
 

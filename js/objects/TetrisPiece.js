@@ -146,7 +146,7 @@ class TetrisPiece {
 				// [] <-- origin
 				// []
 				// []
-				this.ogOrigin = [1,5];
+				this.ogOrigin = [2,5];
 				this.transform = [
 					[0,0],
 					[1,0],
@@ -363,7 +363,6 @@ class TetrisPiece {
 	}
 
 	updatePreviewDrop(gameboard) {
-		return;
 		this.dropPreviewOrigin[0] = this.ogDropPreviewOrigin[0];
 		this.dropPiece(gameboard, this.dropPreviewOrigin);
 	}
