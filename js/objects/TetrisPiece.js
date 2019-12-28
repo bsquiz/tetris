@@ -1,18 +1,17 @@
 class TetrisPiece {
 	constructor(type) {
 		this.type = type;
-		this.origin = [3,5];
+		this.origin = [2,5];
 		this.rotation = 0;
 		this.rotations = [];
-		this.dropPreviewOrigin = [3,5];
-		this.ogDropPreviewOrigin = [3, 5];
-
+	
 		switch(type) {
 			case Tetris.PieceTypes.SQUARE:
 				/*
 				[][]
 				[][]
 				*/
+				this.origin = [0,4];
 				this.transform = [
 					[0,0],
 					[0,1],
@@ -44,6 +43,11 @@ class TetrisPiece {
 				];
 		break;
 			case Tetris.PieceTypes.S:
+				/*
+				  [][]
+				[][] <- origin is here
+				*/
+				this.origin = [1,5];
 				this.transform = [
 					[0,0],
 					[0,-1],
@@ -95,8 +99,9 @@ class TetrisPiece {
 			case Tetris.PieceTypes.Z:
 				/*
 				[][]
-				  [][]
+				  [][] <-- origin is first col on this row
 				*/
+				this.origin = [1,5];
 				this.transform = [
 					[0,0],
 					[0,1],
@@ -139,9 +144,10 @@ class TetrisPiece {
 			break;
 			case Tetris.PieceTypes.LINE:
 				// []
+				// [] <-- origin
 				// []
 				// []
-				// []
+				this.origin = [1,5];
 				this.transform = [
 					[0,0],
 					[1,0],
@@ -186,6 +192,7 @@ class TetrisPiece {
 				// []
 				// []
 				// [][] <- origin is 1st
+				this.origin = [2,5];
 				this.transform = [
 					[0,0],
 					[0,1],
@@ -228,7 +235,8 @@ class TetrisPiece {
 			break;
 			case Tetris.PieceTypes.TRIANGLE:
 				//   []
-				// [][][]
+				// [][][] <-- origin is middle block
+				this.origin = [1, 5];
 				this.transform = [
 					[0,0],
 					[0,-1],
@@ -272,6 +280,10 @@ class TetrisPiece {
 
 			default: break;
 		}
+
+		this.dropPreviewOrigin = [this.origin[0], this.origin[1]];
+		this.ogDropPreviewOrigin = [this.origin[0], this.origin[1]];
+
 	}
 
 	getType() { return this.type; }	
