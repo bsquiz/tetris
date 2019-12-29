@@ -16,6 +16,21 @@
 				<br>
 				spacebar = hard drop
 				</div>
+
+				<button id="pauseButton" onclick="pauseGame()">pause</button>
+				<button id="unpauseButton" onclick="unpauseGame()" style="display: none;">play</button>
+						
+				<button
+					id="musicMuteButton"
+					onclick="muteMusic()"
+					style="display: none;">	
+					mute music
+				</button>
+				<button	
+					id="musicUnmuteButton"
+					onclick="unmuteMusic()">
+					unmute music
+				</button>
 			</div>
 
 			<div class="m-x" id="game">
@@ -26,17 +41,7 @@
 						<button id="rightBtn">-></button>
 						<button>spin</button>
 						<button onclick="Tetris.init()">start</button>
-						<button onclick="Tetris.pause()">pause</button>
-						<button onclick="Tetris.start()">play</button>
-						<button
-							id="musicMuteButton"
-							onclick="muteMusic()"
-							style="display: none;">	
-							mute music</button>
-						<button	
-							id="musicUnmuteButton"
-							onclick="unmuteMusic()"
-						>unmute music</button>
+
 				</div>
 
 				<div id="gameOver" class="gray-border">
@@ -80,6 +85,16 @@
 				BMusicPlayer.play();
 				document.getElementById('musicMuteButton').style.display = 'block';
 				document.getElementById('musicUnmuteButton').style.display = 'none';
+			}
+			function pauseGame() {
+				Tetris.pause();
+				document.getElementById('unpauseButton').style.display = 'block';
+				document.getElementById('pauseButton').style.display = 'none';
+			}
+			function unpauseGame() {
+				Tetris.start();
+				document.getElementById('unpauseButton').style.display = 'none';
+				document.getElementById('pauseButton').style.display = 'block';
 			}
 		</script>
 	</body>
