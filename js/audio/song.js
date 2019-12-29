@@ -106,20 +106,20 @@ const TetrisSong = {
 			pitch: 'D4',
 			duration: 2
 		},{
-			pitch: 'B4',
+			pitch: 'B3',
 			duration: 2
 		}],
 		"E": [{
 			pitch: 'C4',
 			duration: 2
 		},{
-			pitch: 'A4',
+			pitch: 'A3',
 			duration: 2
 		},{
 			pitch: 'GS3',
 			duration: 2
 		},{
-			pitch: 'B4',
+			pitch: 'B3',
 			duration: 2,
 		}],
 		"F": [{
@@ -129,10 +129,10 @@ const TetrisSong = {
 			pitch: 'E4',
 			duration: 1
 		},{
-			pitch: 'A5',
+			pitch: 'A4',
 			duration: 1
 		},{
-			pitch: 'A5',
+			pitch: 'A4',
 			duration: 1
 		},{
 			pitch: 'GS4',

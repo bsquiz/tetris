@@ -15,18 +15,21 @@ const BMusicPlayer = {
 		"SINE": {
 			oscillator: {},
 			track: {},
+			playNextNote: true,
 			currentNote: 0,
 			nextNoteTimer: 0
 		},
 		"TRIANGLE": {
 			oscillator: {},
 			track: {},
+			playNextNote: true,
 			currentNote: 0,
 			nextNoteTimer: 0
 		},
 		"NOISE": {
 			oscillator: {},
 			track: {},
+			playNextNote: true,
 			currentNote: 0,
 			nextNoteTimer: 0
 		}
@@ -66,26 +69,52 @@ const BMusicPlayer = {
 		const note = channel.track[channel.currentNote];
 		const nextNote = channel.track[channel.currentNote + 1];
 		const pitch = this.Pitches[note.pitch];
+		const duration = note.duration * this.CLOCK_SCALE;
 
-		channel.nextNoteTimer = nextNote.duration * this.FRAME_SCALE;	
-		console.log(pitch);
-		console.log(channel.currentNote);
+		//channel.nextNoteTimer = nextNote.duration * this.FRAME_SCALE;	
+		channel.playNextNote = false;
+		console.log(`note: ${note.pitch}, pitch: ${pitch}, duration: ${note.duration}`);
 		if (pitch !== this.Pitches.REST) {
 			BAudio.playOscillator(
 				channel.oscillator,
 				pitch,
-				note.duration * this.CLOCK_SCALE 
+				duration 
 			);
-		}	
+		}
+		window.setTimeout(() => {
+			channel.playNextNote = true;
+		}, duration); 
 	},
-	
+
 	update() {
 		if (!this.playing) return;
 
 		for(prop in this.channels) {
 			if (!this.channels.hasOwnProperty(prop)) continue;
 
-			if (prop !== 'NOISE') continue;
+			if (prop !== 'SINE') continue;
+			const channel = this.channels[prop];
+		
+			if (channel.playNextNote) {
+				channel.currentNote++;
+				if (channel.currentNote > channel.track.length - 2) {
+					channel.currentNote = 0;
+				}
+
+				this.playNote(channel);
+			}
+		}
+	},
+
+	_update() {
+		if (!this.playing) return;
+
+		for(prop in this.channels) {
+			if (!this.channels.hasOwnProperty(prop)) continue;
+
+			// only play melody for now
+			if (prop !== 'SINE') continue;
+
 			const channel = this.channels[prop];
 		
 			if (this.firstNote) {
