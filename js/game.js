@@ -1,5 +1,4 @@
 const Tetris = {
-	isRunning: false,
 	rows: 24,
 	cols: 10,
 	score: 0,
@@ -7,18 +6,25 @@ const Tetris = {
 	level: 0,
 	gameBoard: null,
 	currentPiece: {}, 
-	dropDebounceTimer: 10,
-	MAX_DROP_DEBOUNCE_TIMER: 5,
-	dropTimer: 30,
-	maxDropTimer: 30,
-	moveTimer: 8,
-	maxMoveTimer: 8,
-	availablePieces: [],
-	canDropPiece: true,
-	canRotatePiece: true,
 	nextPiece: {},
+	availablePieces: [],
+
+	isRunning: false,
 	shouldRedraw: true,
 	audioInitialized: false,
+	canRotatePiece: true,
+	canDropPiece: true,
+	isClearingRow: false,
+	
+	moveTimer: 8,
+	maxMoveTimer: 8,
+	dropTimer: 30,
+	maxDropTimer: 60,
+	clearRowTimer: 60,
+	dropDebounceTimer: 10,
+	MAX_CLEAR_ROW_TIMER: 30,
+	MAX_DROP_DEBOUNCE_TIMER: 5,
+
 	keysDown: {
 		32: false,
 		37: false,
@@ -142,6 +148,18 @@ const Tetris = {
 	update() {
 		if (!this.isRunning) return;
 
+		// animates row clear
+		if (this.isClearingRow && this.clearRowTimer > 0) {
+			this.clearRowTimer--;
+
+			if (this.clearRowTimer === 0) {
+				this.isClearingRow = false;
+				this.clearRowTimer = this.MAX_CLEAR_ROW_TIMER;
+			}
+
+			return;
+		}
+
 		let rowsToClear = 0;
 		let isHardDrop = false;
 
@@ -169,10 +187,12 @@ const Tetris = {
 				rowsToClear = this.gameBoard.checkClear();
 
 				if (rowsToClear.length > 0) {
+					this.isClearingRow = true;
 					this.score += this.calculateClearScore(isHardDrop, rowsToClear.length);
 					this.clearedLines += rowsToClear.length;
-		
+
 					TetrisHUD.drawStats(this.score, this.clearedLines, this.level);
+					TetrisSoundEffects.playClearSound();
 				}
 			}
 

@@ -15,6 +15,18 @@ const TetrisSoundEffects = {
 		this.playOscillator(this.sineWave, 1000, 25);
 	},
 	
+	playClearSound() {
+		const duration = 100;
+
+		this.playOscillator(this.sineWave, 400, duration);
+		window.setTimeout(() => {
+			this.playOscillator(this.sineWave, 500, duration);
+			window.setTimeout(() => {
+				this.playOscillator(this.sineWave, 1000, duration);
+			}, duration);
+		}, duration);
+	},
+
 	init() {
 		this.sineWave = BAudio.createOscillator(BAudio.Oscillators.SINE);
 	}
