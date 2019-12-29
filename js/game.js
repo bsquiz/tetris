@@ -3,7 +3,7 @@ const Tetris = {
 	cols: 10,
 	score: 0,
 	clearedLines: 0,
-	level: 0,
+	level: 1,
 	gameBoard: null,
 	currentPiece: {}, 
 	nextPiece: {},
@@ -19,7 +19,7 @@ const Tetris = {
 	moveTimer: 8,
 	maxMoveTimer: 8,
 	dropTimer: 30,
-	maxDropTimer: 60,
+	maxDropTimer: 1,
 	clearRowTimer: 60,
 	dropDebounceTimer: 10,
 	MAX_CLEAR_ROW_TIMER: 30,
@@ -144,7 +144,34 @@ const Tetris = {
 		this.currentPiece.updatePreviewDrop(this.gameBoard.getBoard());
 		TetrisHUD.drawNextPiece(this.nextPiece);
 	},
+	
+	increaseLevel() {
+		this.level++;
+		if (this.maxDropTimer > 5) {
+			this.maxDropTimer -= 5;
+		}
+	},
 
+	reset() {
+		this.maxDropTimer = 30;
+		this.dropTimer = this.maxDropTimer;
+		this.gameBoard.reset();	
+		TetrisGraphics.draw(this.currentPiece, this.gameBoard.getBoard()); 
+	},
+		
+	gameOver() {
+		this.isRunning = false;
+		document.getElementById('game').className = 'gameover';
+		document.getElementById('gameOver').style.display = 'block';
+	},
+
+	retry() {
+		this.isRunning = true;
+		document.getElementById('game').className = '';
+		document.getElementById('gameOver').style.display = 'none';
+		this.reset();
+	},	
+		
 	update() {
 		if (!this.isRunning) return;
 
@@ -158,6 +185,10 @@ const Tetris = {
 			}
 
 			return;
+		}
+
+		if (this.currentPiece.isStuck(this.gameBoard.getBoard())) {
+			this.gameOver();
 		}
 
 		let rowsToClear = 0;
@@ -191,6 +222,10 @@ const Tetris = {
 					this.score += this.calculateClearScore(isHardDrop, rowsToClear.length);
 					this.clearedLines += rowsToClear.length;
 
+					if (this.score % 1000 === 0) {
+						this.increaseLevel();
+					}
+
 					TetrisHUD.drawStats(this.score, this.clearedLines, this.level);
 					TetrisSoundEffects.playClearSound();
 				}
@@ -217,7 +252,6 @@ const Tetris = {
 			
 		TetrisSoundEffects.init();	
 		BMusicPlayer.init(TetrisSong);			
-		BMusicPlayer.start();
 	},
 
 	start() {

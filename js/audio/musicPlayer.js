@@ -65,6 +65,14 @@ const BMusicPlayer = {
 		this.update();
 	},
 
+	play() {
+		this.playing = true;
+	},
+	
+	pause() {
+		this.playing = false;
+	},
+
 	playNote(channel) {
 		const note = channel.track[channel.currentNote];
 		const nextNote = channel.track[channel.currentNote + 1];

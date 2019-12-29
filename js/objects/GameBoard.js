@@ -6,6 +6,13 @@ class GameBoard {
 	}
 
 	getBoard() { return this.board; }
+
+	reset() {
+		this.board = [];	
+		for(let i=0; i<this.rows; i++) {
+			this.board.push(this.createEmptyRow());
+		}
+	}
 	
 	createEmptyRow() {
 		return new Array(this.cols).fill(0);
@@ -50,10 +57,8 @@ class GameBoard {
 	}
 
 	init() {
-		for(let i=0; i<this.rows; i++) {
-			this.board.push(this.createEmptyRow());
-		}
-
+		this.reset();
+		
 		for (let i=0; i<this.cols - 2; i++) {
 //			this.board[this.rows - 2][i] = 1;
 //			this.board[this.rows - 3][i] = 1;

@@ -22,6 +22,21 @@ body {
 .hud-section-inner {
 	padding: 5px;
 }
+.gameover canvas {
+	opacity: 0.25;
+}
+#gameOver {
+	position: absolute;
+	top: 50px;
+	padding: 10px 0 10px 0;
+	margin-left: 25px;
+	width: 200px;
+	text-align: center;
+	display: none;
+}
+#game {
+	margin: 0 5px;
+}
 #wrapper {
 	width: 500px;
 	height: 600px;

@@ -371,6 +371,10 @@ class TetrisPiece {
 		this.dropPiece(gameboard, this.origin);
 	}
 
+	isStuck(gameboard) {
+		return (this.checkHitBottom(gameboard, this.origin) && this.origin[0] === this.ogOrigin[0]);
+	}
+
 	moveDown(gameboard) {
 		if (!this.checkHitBottom(gameboard, this.origin)) {
 			this.descend(this.origin);

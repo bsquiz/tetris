@@ -8,17 +8,17 @@
 		<div id="wrapper">
 			<div>
 				<div class="p gray-border">
-				left / right = <- -> 
+				left / right arrow = move 
 				<br>
-				rotate = ^ 
+				up arrow = rotate
 				<br>
-				drop = | 
+				down arrow = drop 
 				<br>
-				hard drop = spacebar
+				spacebar = hard drop
 				</div>
 			</div>
 
-			<div class="m-x">
+			<div class="m-x" id="game">
 				<canvas id="backgroundCanvas" width="250" height="600"></canvas>
 				<canvas id="gameCanvas" class="gray-border" width="250" height="600"></canvas>
 				<div>
@@ -28,6 +28,20 @@
 						<button onclick="Tetris.init()">start</button>
 						<button onclick="Tetris.pause()">pause</button>
 						<button onclick="Tetris.start()">play</button>
+						<button
+							id="musicMuteButton"
+							onclick="muteMusic()"
+							style="display: none;">	
+							mute music</button>
+						<button	
+							id="musicUnmuteButton"
+							onclick="unmuteMusic()"
+						>unmute music</button>
+				</div>
+
+				<div id="gameOver" class="gray-border">
+					<p>game over</p>
+					<button onclick="Tetris.retry();">retry</button>
 				</div>
 			</div>
 			
@@ -35,9 +49,9 @@
 				<div class="p margin-bottom gray-border">	
 				<div>Score</div>
 				<div id="scoreVal">0</div>
-				<p>Level</p>
+				<div>Level</div>
 				<div id="levelVal">0</div>
-				<p>Lines</p>
+				<div>Lines</div>
 				<div id="linesVal">0</div>
 				</div>
 				<div class="gray-border">
@@ -56,5 +70,17 @@
 		<script src="js/audio/song.js"></script>
 		<script src="js/audio/soundEffects.js"></script>
 		<script src="js/init.js"></script>
+		<script>
+			function muteMusic() {
+				BMusicPlayer.pause();
+				document.getElementById('musicMuteButton').style.display = 'none';
+				document.getElementById('musicUnmuteButton').style.display = 'block';
+			}
+			function unmuteMusic() {
+				BMusicPlayer.play();
+				document.getElementById('musicMuteButton').style.display = 'block';
+				document.getElementById('musicUnmuteButton').style.display = 'none';
+			}
+		</script>
 	</body>
 </html>
