@@ -8,7 +8,15 @@ function $addClass($el, cls) {
 }
 
 function $removeClass($el, cls) {
-	$el.className.replace(cls, '');
+	$el.className = $el.className.replace(cls, '');
+}
+
+function $toggleClass($el, cls) {
+	if ($el.className.indexOf(cls) === -1) {
+		$el.className += ` ${cls}`;
+	} else {
+		$el.className = $el.className.replace(cls, '');
+	}
 }
 
 function updateGame() {
@@ -23,22 +31,15 @@ function $on($el, event, callback) {
 function toggleMusic(e) {
 	const $button = e.target;
 
-	if (Tetris.toggleMusic()) {
-		$addClass($button, 'disabled');
-	} else {
-		$removeClass($button, 'disabled');
-	}
+	$toggleClass($button, 'disabled');
+	Tetris.toggleMusic();
 }
 
-function pauseGame() {
-	Tetris.pause();
-	$('unpauseButton').style.display = 'block';
-	$('pauseButton').style.display = 'none';
-}
-function unpauseGame() {
-	Tetris.start();
-	$('unpauseButton').style.display = 'none';
-	$('pauseButton').style.display = 'block';
+function togglePause(e) {
+	const $button = e.target;
+
+	$toggleClass($button, 'disabled');
+	Tetris.togglePause();
 }
 
 function addGameEventListeners() {
@@ -48,6 +49,7 @@ function addGameEventListeners() {
 	const $dropBtn = $('dropBtn');
 	const $hardDropBtn = $('hardDropBtn');
 	const $musicToggleButton = $('musicToggleButton');
+	const $pauseToggleButton = $('pauseToggleButton');
 
 	$on($leftBtn, "mousedown", function(e) {
 		Tetris.setKeyDown(Tetris.Keys.LEFT, true);
@@ -85,6 +87,7 @@ function addGameEventListeners() {
 	});
 
 	$on($musicToggleButton, "click", toggleMusic);
+	$on($pauseToggleButton, "click", togglePause);
 
 	$on(window, "keydown", function(e) {
 		Tetris.setKeyDown(e.keyCode, true);

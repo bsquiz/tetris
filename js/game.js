@@ -316,11 +316,11 @@ const Tetris = {
 	start() {
 		this.isRunning = true;
 	},
-
-	pause() {
-		this.isRunning = false;
-	},
 	
+	togglePause() {
+		return this.isRunning = !this.isRunning;
+	},
+
 	init() {
 		this.availablePieces = [
 			new TetrisPiece(1),
