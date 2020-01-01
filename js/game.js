@@ -75,16 +75,16 @@ const Tetris = {
 		this.playMusic = !this.playMusic;
 
 		if (this.playMusic) {
-			BMusicPlayer.pause();
-		} else {
 			BMusicPlayer.play();
+		} else {
+			BMusicPlayer.pause();
 		}
 
 		return this.playMusic;
 	},
 
 	calculateClearScore(hardDrop = false, numLinesCleared = 1) {
-		return 100 * (hardDrop ? 2 : 1) * numLinesCleared;
+		return 10 * (hardDrop ? 2 : 1) * numLinesCleared;
 	},
 
 	makeNextPiece(excludePieceType) {
@@ -173,7 +173,7 @@ const Tetris = {
 		this.level = 1;
 		this.score = 0;
 		this.clearedLines = 0;
-		this.maxDropTimer = 1;
+		this.maxDropTimer = 30;
 		this.dropTimer = this.maxDropTimer;
 		this.fillRow = this.rows - 1;
 		this.fillCol = this.cols - 1;
@@ -276,7 +276,12 @@ const Tetris = {
 					this.score += this.calculateClearScore(isHardDrop, rowsToClear.length);
 					this.clearedLines += rowsToClear.length;
 
-					if (this.score % 1000 === 0) {
+					if (
+						this.clearedLines > 10 && this.level === 1 ||
+						this.clearedLines > 20 && this.level === 2 ||
+						this.clearedLines > 30 && this.level === 3 ||
+						this.clearedLines > 40 && this.level === 4
+					) {
 						this.increaseLevel();
 					}
 
