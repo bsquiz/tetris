@@ -25,10 +25,13 @@ const Tetris = {
 	dropDebounceTimer: 10,
 	MAX_CLEAR_ROW_TIMER: 30,
 	MAX_DROP_DEBOUNCE_TIMER: 5,
-	GAME_OVER_ANIMATION_TIMER: 5,
+	GAME_OVER_ANIMATION_TIMER: 3,
 
-	gameOverAnimationCount: 0,
-	
+	fillRow: 0,
+	fillCol: 0,	
+	fillColDirection: 0,
+	changingFillDirection: false,
+
 	keysDown: {
 		32: false,
 		37: false,
@@ -170,8 +173,12 @@ const Tetris = {
 		this.level = 1;
 		this.score = 0;
 		this.clearedLines = 0;
-		this.maxDropTimer = 30;
+		this.maxDropTimer = 1;
 		this.dropTimer = this.maxDropTimer;
+		this.fillRow = this.rows - 1;
+		this.fillCol = this.cols - 1;
+		this.fillColDirection = -1;
+		this.changingFillDirection = false;
 
 		this.gameBoard.reset();	
 
@@ -185,15 +192,25 @@ const Tetris = {
 	},
 	
 	animateGameOver() {
-			
 		window.setTimeout(() => {
-			TetrisGraphics.drawGameOverTile(this.gameOverAnimationCount);
-			this.gameOverAnimationCount++;
-			if (this.gameOverAnimationCount < this.rows * this.cols) {
-				this.animateGameOver();
+			if (this.changingFillDirection) {
+				this.changingFillDirection = false;
+				TetrisGraphics.drawGameOverTile(this.fillRow, this.fillCol);
+				this.fillRow--;
 			} else {
+				TetrisGraphics.drawGameOverTile(this.fillRow, this.fillCol);
+				this.fillCol += this.fillColDirection;
+
+				if (this.fillCol === this.cols - 1 || this.fillCol === 0) {
+					this.changingFillDirection = true;
+					this.fillColDirection *= -1;
+				}
+			}
+			if (this.fillRow < 0 && this.fillCol === 0) {
 				document.getElementById('game').className = 'gameover';
 				document.getElementById('gameOver').style.display = 'block';
+			} else {
+				this.animateGameOver();
 			}
 		}, this.GAME_OVER_ANIMATION_TIMER);
 	}, 

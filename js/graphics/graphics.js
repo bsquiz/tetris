@@ -19,10 +19,13 @@ const TetrisGraphics = {
 	},
 	
 	drawGameOverTile(row, col) {
-		
+		const drawX = col * this.colWidth;
+		const drawY = row * this.colHeight;
+		console.log(`x ${drawX} y ${drawY}`);	
+
 		this.ctx.fillRect(
-			0,
-			0,
+			drawX,
+			drawY,
 			this.colWidth,
 			this.colHeight
 		); 
