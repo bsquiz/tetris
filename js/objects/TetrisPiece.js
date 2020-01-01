@@ -363,7 +363,9 @@ class TetrisPiece {
 	}
 
 	updatePreviewDrop(gameboard) {
-		this.dropPreviewOrigin[0] = this.ogDropPreviewOrigin[0];
+		this.dropPreviewOrigin[0] = this.origin[0];
+		this.dropPreviewOrigin[1] = this.origin[1];
+	//	this.dropPreviewOrigin[0] = this.ogDropPreviewOrigin[0];
 		this.dropPiece(gameboard, this.dropPreviewOrigin);
 	}
 
@@ -399,7 +401,6 @@ class TetrisPiece {
 		}
 
 		this.origin[1]--;
-		this.dropPreviewOrigin[1]--;
 
 		return true;
 	}
@@ -418,7 +419,6 @@ class TetrisPiece {
 		}
 
 		this.origin[1]++;
-		this.dropPreviewOrigin[1]++;
 		
 		return true;
 	}

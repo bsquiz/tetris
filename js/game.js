@@ -12,6 +12,7 @@ const Tetris = {
 	isRunning: false,
 	shouldRedraw: true,
 	audioInitialized: false,
+	playMusic: false,
 	canRotatePiece: true,
 	canDropPiece: true,
 	isClearingRow: false,
@@ -19,12 +20,15 @@ const Tetris = {
 	moveTimer: 8,
 	maxMoveTimer: 8,
 	dropTimer: 30,
-	maxDropTimer: 1,
+	maxDropTimer: 30,
 	clearRowTimer: 60,
 	dropDebounceTimer: 10,
 	MAX_CLEAR_ROW_TIMER: 30,
 	MAX_DROP_DEBOUNCE_TIMER: 5,
+	GAME_OVER_ANIMATION_TIMER: 5,
 
+	gameOverAnimationCount: 0,
+	
 	keysDown: {
 		32: false,
 		37: false,
@@ -64,13 +68,25 @@ const Tetris = {
 		this.keysDown[key] = val;
 	},
 
+	toggleMusic() {
+		this.playMusic = !this.playMusic;
+
+		if (this.playMusic) {
+			BMusicPlayer.pause();
+		} else {
+			BMusicPlayer.play();
+		}
+
+		return this.playMusic;
+	},
+
 	calculateClearScore(hardDrop = false, numLinesCleared = 1) {
 		return 100 * (hardDrop ? 2 : 1) * numLinesCleared;
 	},
 
 	makeNextPiece(excludePieceType) {
 		const r = Math.floor(Math.random() * 6);
-		let newPiece = this.availablePieces[0];
+		let newPiece = this.availablePieces[r];
 		
 		newPiece.reset();
 
@@ -129,9 +145,7 @@ const Tetris = {
 			piece.drop(this.gameBoard.getBoard());
 		}
 
-		if (moveLeft || moveRight) {
-			piece.updatePreviewDrop(this.gameBoard.getBoard());
-		}
+		piece.updatePreviewDrop(this.gameBoard.getBoard());
 
 		return (moveLeft || moveRight || moveDown || moveUp || drop);
 	},
@@ -153,16 +167,39 @@ const Tetris = {
 	},
 
 	reset() {
+		this.level = 1;
+		this.score = 0;
+		this.clearedLines = 0;
 		this.maxDropTimer = 30;
 		this.dropTimer = this.maxDropTimer;
+
 		this.gameBoard.reset();	
+
+		this.currentPiece = this.makeNextPiece(0);
+		this.nextPiece = this.makeNextPiece(this.currentPiece.getType());
+		this.currentPiece.updatePreviewDrop(this.gameBoard.getBoard());
+
+		TetrisHUD.drawNextPiece(this.nextPiece);
+		TetrisHUD.drawStats(this.score, this.clearedLines, this.level);
 		TetrisGraphics.draw(this.currentPiece, this.gameBoard.getBoard()); 
 	},
-		
+	
+	animateGameOver() {
+			
+		window.setTimeout(() => {
+			TetrisGraphics.drawGameOverTile(this.gameOverAnimationCount);
+			this.gameOverAnimationCount++;
+			if (this.gameOverAnimationCount < this.rows * this.cols) {
+				this.animateGameOver();
+			} else {
+				document.getElementById('game').className = 'gameover';
+				document.getElementById('gameOver').style.display = 'block';
+			}
+		}, this.GAME_OVER_ANIMATION_TIMER);
+	}, 
 	gameOver() {
 		this.isRunning = false;
-		document.getElementById('game').className = 'gameover';
-		document.getElementById('gameOver').style.display = 'block';
+		this.animateGameOver();
 	},
 
 	retry() {
@@ -273,13 +310,8 @@ const Tetris = {
 		];
 		this.gameBoard = new GameBoard(this.rows, this.cols);
 		this.gameBoard.init();
-
-		this.currentPiece = this.makeNextPiece(0);
-		this.nextPiece = this.makeNextPiece(this.currentPiece.getType());
-		this.currentPiece.updatePreviewDrop(this.gameBoard.getBoard());
-
 		TetrisGraphics.init(this.rows, this.cols);
-		TetrisHUD.drawNextPiece(this.nextPiece);
 		this.initAudio();
+		this.reset();
 	}
 };

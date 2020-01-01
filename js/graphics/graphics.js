@@ -4,12 +4,28 @@ const TetrisGraphics = {
 	colHeight: 25,
 	PieceColors: {},
 
+	Colors: {
+		DARK_GRAY: '#565656',
+		LIGHT_GRAY: '#d3d3d3',
+		GRID_GRAY: '#333333'
+	},
+
 	SquareDrawX(x, tx) { 	
 		return x * this.colWidth + (tx * this.colWidth);
 	},
 
 	SquareDrawY(y, ty) {
 		return y * this.colHeight + (ty * this.colHeight);
+	},
+	
+	drawGameOverTile(row, col) {
+		
+		this.ctx.fillRect(
+			0,
+			0,
+			this.colWidth,
+			this.colHeight
+		); 
 	},
 
 	drawPiece(piece) {
@@ -69,18 +85,18 @@ const TetrisGraphics = {
 		let x = 0;
 		let y = 0;
 
-		ctx.strokeStyle = '#575757';
+		ctx.strokeStyle = this.Colors.GRID_GRAY;
 
-		for (let i=0; i<rows; i++) {
+		for (let i=0; i<cols; i++) {
 			ctx.moveTo(x, 0);
 			ctx.lineTo(x, height);
 			
 			x += colWidth;
 		}
 
-		for (let i=0; i<cols; i++) {
-			ctx.moveTo(y, 0);
-			ctx.lineTo(y, width);
+		for (let i=0; i<rows; i++) {
+			ctx.moveTo(0, y);
+			ctx.lineTo(width, y);
 
 			y += colHeight;
 		}
@@ -101,7 +117,7 @@ const TetrisGraphics = {
 		this.width = $canvas.width;
 		this.height = $canvas.height;
 		this.ctx = $canvas.getContext("2d");
-		this.ctx.strokeStyle = '#575757';
+		this.ctx.strokeStyle = this.Colors.LIGHT_GRAY;
 		this.ctx.fillStyle = 'white';
 
 		this.PieceColors[Tetris.PieceTypes.EMPTY] = "black";

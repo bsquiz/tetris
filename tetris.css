@@ -3,69 +3,138 @@
 /* light #555555 */
 /* lightest #999999 */
 body {
-	background: #111111;
+	background: #292929;
 	color: white;
+	font-family: 'Bebas Neue', sans-serif;
 }
-.hud-section {
-	padding: 5px;
+button {
+	border: none;
 }
-.gray-border {
-	border: solid 5px;
-	border-color: #333333;
+button:hover {
+	cursor: pointer;
 }
-.m-x {
-	margin: 0 5px;
+
+.solid-background {
+	background: #111111;
 }
-.p {
-	padding: 5px;
+.disabled {
+	background: gray;
+}	
+
+.w-3 {
+	width: 30%;
 }
-.hud-section-inner {
-	padding: 5px;
-}
-.gameover canvas {
-	opacity: 0.25;
-}
-#gameOver {
-	position: absolute;
-	top: 50px;
-	padding: 10px 0 10px 0;
-	margin-left: 25px;
-	width: 200px;
+/* font */
+.text-center {
 	text-align: center;
-	display: none;
 }
-#game {
-	margin: 0 5px;
+.text-left {
+	text-align: left;
 }
-#wrapper {
-	width: 500px;
-	height: 600px;
+.font-l {
+	font-size: 1.25em;
+}
+.font-xl {
+	font-size: 2em;
+}
+
+/* padding */
+.p-less {
+	padding: 5px;
+}
+.padding-less {
+	padding: 5px;
+}
+
+/* margin */
+.m-y-xl {
+	margin: 30px 0 30px 0;
+}
+.m-x-less {
+	margin-left: 5px;
+	margin-right: 5px;
+}
+.margin-auto {
 	margin: auto;
-	display: flex;
-}
-#backgroundCanvas {
-	display: none;
-}
-#hud {
-	display: flex;
-	flex-direction: column;
-	text-transform: uppercase;
-	text-align: center;
-}
-#mobileButtons {
-	display: none;
-}
-.rounded {
-	border-radius: 5px;
-}
-.border-left-0 {
-	border-left: none;
 }
 .margin-bottom {
 	margin-bottom: 5px;
 }
+
+/* border */
+.border-left-0 {
+	border-left: none;
+}
+.rounded {
+	border-radius: 5px;
+}
+.solid-border {
+	border: solid;
+	border-color: #333333;
+}
+
+/* display */
+.flex {
+	display: flex;
+}
+
+.d-relative {
+	position: relative;
+}
+.d-inline-block { 
+	display: inline-block;
+}
+.d-sm-none {
+	display: none;
+}
+.hide {
+	display: none;
+}
+
+.toggle-button {
+	height: 25px;
+	width: 25px;
+}
+
+.gameover canvas {
+	opacity: 0.25;
+}
+.modal {
+	position: absolute;
+	top: 50px;
+	padding: 10px 0 10px 0;
+	margin-left: 25px;
+}
+
+#gameOver {
+	width: 200px;
+}
+#startScreen {
+	width: 300px;
+	z-index: 1;
+}
+
+#gameCanvas {
+	position: absolute;
+	left: 0;
+}
+#wrapper {
+	width: 370px;
+	height: 600px;
+}
+
+#mobileButtons {
+	display: none;
+}
+
 @media (max-width: 640px) {
-	#mobileButtons {
+	#game canvas {
+		height: 400px;
+	}
+	#wrapper {
+		width: 100%;
+	}
+	.d-sm-none {
 		display: block;
 	}
 }
