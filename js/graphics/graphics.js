@@ -17,6 +17,21 @@ const TetrisGraphics = {
 	SquareDrawY(y, ty) {
 		return y * this.colHeight + (ty * this.colHeight);
 	},
+
+	hidePreview(piece) {
+		this.ctx.strokeStyle = this.Colors.GRID_GRAY;
+		this.drawPiece(piece);
+		this.ctx.strokeStyle = this.Colors.LIGHT_GRAY;
+	},	
+
+	drawClearedTile(row, col) {
+		this.ctx.clearRect(
+			col * this.colWidth,
+			row * this.colHeight,
+			this.colWidth,
+			this.colHeight
+		);
+	},
 	
 	drawGameOverTile(row, col) {
 		const drawX = col * this.colWidth;

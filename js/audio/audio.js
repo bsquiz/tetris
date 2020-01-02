@@ -29,31 +29,63 @@ const BAudio = {
 		const ctx = new AudioContext();
 		const oscillator = ctx.createOscillator();
 		const gain = ctx.createGain();
+		const analyser = ctx.createAnalyser();
+		const masterGain = ctx.createGain();
 
 		oscillator.type = type;
 		oscillator.start();
 		gain.gain.value = 0;
-		
+		masterGain.gain.value = 1;
+	
 		if (type === this.Oscillators.NOISE) {
 			oscillator.setPeriodicWave(this.createNoiseOutput());
 		}
 
 		oscillator.connect(gain);
-		gain.connect(ctx.destination);
+		gain.connect(masterGain);
+		masterGain.connect(analyser);
+		analyser.connect(ctx.destination);
+
+		analyser.fftSize = 32;
+		analyser.smoothingTimeConstant = 0.1;
+
 		return {
 			ctx: ctx,
 			oscillator: oscillator,
-			gain: gain
+			analyser: analyser,
+			frequencyData: new Float32Array(analyser.frequencyBinCount),
+			uInt8FrequencyData: new Uint8Array(analyser.frequencyBinCount),
+			gain: gain,
+			masterGain: masterGain
 		};
 	},
-	playOscillator(oscillator, frequency = 440, duration = 100, volume = 0.1) {
-		
-		oscillator.oscillator.frequency.value = frequency;
-		oscillator.gain.gain.value = volume;
+	playOscillator(
+		oscillator,
+		delay,
+		frequency = 440,
+		duration = 0.1,
+		volume = 0.1,
+		attack = 0,
+		decay = 0
+	) {
+		console.log(`${delay} ${frequency}`);
 
-		window.setTimeout(() => {
-			oscillator.gain.gain.value = 0;
-		}, duration);
+		oscillator.oscillator.frequency.setValueAtTime(
+			frequency,
+			oscillator.ctx.currentTime + delay
+		);
+		oscillator.gain.gain.setValueAtTime(
+			volume,
+			oscillator.ctx.currentTime + delay - attack 
+		);
+		oscillator.gain.gain.setValueAtTime(
+			volume,
+			oscillator.ctx.currentTime + delay + duration + attack 
+		); 
+		oscillator.gain.gain.linearRampToValueAtTime(
+			0,
+			oscillator.ctx.currentTime + delay + duration - attack - decay 
+		);
 	},
 	init() {
 		if (this.ctx.audioWorklet) {

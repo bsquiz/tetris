@@ -3,14 +3,8 @@ const BMusicPlayer = {
 	triangleWave: null,
 	noiseWave: null,
 	playing: false,
-	nextNoteTimer: 0,
-	tempo: 150,
-	totalMeasures: 32,
-	totalBeats: 32 * 4,
-	FPS: 60,
-	BPS: 150 / 60,
-	FRAME_SCALE: 0,
-	CLOCK_SCALE: 0,
+	tempo: 0.4,
+
 	channels: {
 		"SINE": {
 			oscillator: {},
@@ -66,80 +60,11 @@ const BMusicPlayer = {
 	},
 
 	play() {
-		this.playing = true;
+		this.sineWave.masterGain.gain.value = 1;
 	},
 	
 	pause() {
-		this.playing = false;
-	},
-
-	playNote(channel) {
-		const note = channel.track[channel.currentNote];
-		const nextNote = channel.track[channel.currentNote + 1];
-		const pitch = this.Pitches[note.pitch];
-		const duration = note.duration * this.CLOCK_SCALE;
-
-		//channel.nextNoteTimer = nextNote.duration * this.FRAME_SCALE;	
-		channel.playNextNote = false;
-		console.log(`note: ${note.pitch}, pitch: ${pitch}, duration: ${note.duration}`);
-		if (pitch !== this.Pitches.REST) {
-			BAudio.playOscillator(
-				channel.oscillator,
-				pitch,
-				duration 
-			);
-		}
-		window.setTimeout(() => {
-			channel.playNextNote = true;
-		}, duration); 
-	},
-
-	update() {
-		if (!this.playing) return;
-
-		for(prop in this.channels) {
-			if (!this.channels.hasOwnProperty(prop)) continue;
-
-			if (prop !== 'SINE') continue;
-			const channel = this.channels[prop];
-		
-			if (channel.playNextNote) {
-				channel.currentNote++;
-				if (channel.currentNote > channel.track.length - 2) {
-					channel.currentNote = 0;
-				}
-
-				this.playNote(channel);
-			}
-		}
-	},
-
-	_update() {
-		if (!this.playing) return;
-
-		for(prop in this.channels) {
-			if (!this.channels.hasOwnProperty(prop)) continue;
-
-			// only play melody for now
-			if (prop !== 'SINE') continue;
-
-			const channel = this.channels[prop];
-		
-			if (this.firstNote) {
-				this.playNote(channel);	
-			}
-	
-			if (channel.nextNoteTimer === 0) {
-				channel.currentNote++;
-				if (channel.currentNote > channel.track.length - 2) {
-					channel.currentNote = 0;
-				}
-
-				this.playNote(channel);
-			}
-			
-			channel.nextNoteTimer--;		
-		};
+		this.sineWave.masterGain.gain.value = 0;
 	},
 
 	init(song) {
@@ -156,15 +81,32 @@ const BMusicPlayer = {
 		this.channels.SINE.track = tracks.TREBLE;
 		this.channels.TRIANGLE.track = tracks.BASS;	
 		this.channels.NOISE.track = tracks.DRUM;	
-		
-		this.channels.SINE.nextNoteTimer = 
-			this.channels.SINE.track[1].duration * 50;
 
-		this.channels.NOISE.nextNoteTimer = 
-			this.channels.NOISE.track[1].duration * 50;
+		let nextTime = 0;
+		for (let prop in this.channels) {
+			if (!this.channels.hasOwnProperty(prop)) continue;
+			
+			if (prop !== 'SINE') continue;
+	
+			const track = this.channels[prop].track;
+				
+			for (let i=0; i<track.length; i++) {
+				const note = track[i];
+				const pitch = this.Pitches[note.pitch];
+				const duration = note.duration * this.tempo;
 
+				BAudio.playOscillator(
+					this.channels.SINE.oscillator,
+					nextTime,
+					pitch,
+					duration,
+					0.1,
+					0.01,
+					0.01
+				);
 
-		this.FRAME_SCALE = this.FPS / this.BPS;		
-		this.CLOCK_SCALE = 1000 / this.BPS;
+				nextTime += duration;
+			}
+		}
 	}
 }

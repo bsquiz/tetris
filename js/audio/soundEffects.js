@@ -1,30 +1,36 @@
 const TetrisSoundEffects = {
-        playOscillator(oscillator, freq = 100, duration = 100, vol = 0.1) {
+        playOscillator(oscillator, freq = 100, duration = 0.1, vol = 0.1) {
                 BAudio.playOscillator(oscillator, freq, duration, vol);
         },
 
 	playRotateSound() {
-		this.playOscillator(this.sineWave, 500);
+		this.playOscillator(this.sineWave, 0, 500);
 	},
 	
 	playMoveSound() {
-		this.playOscillator(this.sineWave, 400, 50);
+		this.playOscillator(this.sineWave, 0, 400, 0.05);
 	},
 
 	playDropSound() {
-		this.playOscillator(this.sineWave, 1000, 25);
+		this.playOscillator(this.sineWave, 0, 1000, 0.025);
 	},
 	
 	playClearSound() {
-		const duration = 100;
+		const duration = 0.1;
 
-		this.playOscillator(this.sineWave, 400, duration);
-		window.setTimeout(() => {
-			this.playOscillator(this.sineWave, 500, duration);
-			window.setTimeout(() => {
-				this.playOscillator(this.sineWave, 1000, duration);
-			}, duration);
-		}, duration);
+		this.playOscillator(this.sineWave, 0, 400, duration);
+		BAudio.playOscillator(
+			this.sineWave,
+			duration,
+			500,
+			duration
+		);
+		BAudio.playOscillator(
+			this.sineWave,
+			duration * 2,
+			1000,
+			duration
+		);
 	},
 
 	init() {

@@ -23,9 +23,11 @@ const Tetris = {
 	maxDropTimer: 30,
 	clearRowTimer: 60,
 	dropDebounceTimer: 10,
+
 	MAX_CLEAR_ROW_TIMER: 30,
 	MAX_DROP_DEBOUNCE_TIMER: 5,
 	GAME_OVER_ANIMATION_TIMER: 3,
+	CLEAR_COL_ANIMATION_TIMER: 3,
 
 	fillRow: 0,
 	fillCol: 0,	
@@ -89,7 +91,7 @@ const Tetris = {
 
 	makeNextPiece(excludePieceType) {
 		const r = Math.floor(Math.random() * 6);
-		let newPiece = this.availablePieces[r];
+		let newPiece = this.availablePieces[0];
 		
 		newPiece.reset();
 
@@ -190,6 +192,22 @@ const Tetris = {
 		TetrisHUD.drawStats(this.score, this.clearedLines, this.level);
 		TetrisGraphics.draw(this.currentPiece, this.gameBoard.getBoard()); 
 	},
+
+	animateRowClear(clearedRow, clearColLeft, clearColRight) {
+		window.setTimeout(() => {
+			TetrisGraphics.drawClearedTile(clearedRow, clearColLeft);
+			TetrisGraphics.drawClearedTile(clearedRow, clearColRight);
+
+			clearColLeft--;
+			clearColRight++;
+	
+			if (clearColLeft < 0 || clearColRight > this.cols) {
+				this.isClearingRow = false;	
+			} else {
+				this.animateRowClear(clearedRow, clearColLeft, clearColRight);
+			}
+		}, this.CLEAR_COL_ANIMATION_TIMER);
+	},
 	
 	animateGameOver() {
 		window.setTimeout(() => {
@@ -229,17 +247,7 @@ const Tetris = {
 	update() {
 		if (!this.isRunning) return;
 
-		// animates row clear
-		if (this.isClearingRow && this.clearRowTimer > 0) {
-			this.clearRowTimer--;
-
-			if (this.clearRowTimer === 0) {
-				this.isClearingRow = false;
-				this.clearRowTimer = this.MAX_CLEAR_ROW_TIMER;
-			}
-
-			return;
-		}
+		if (this.isClearingRow) return;
 
 		if (this.currentPiece.isStuck(this.gameBoard.getBoard())) {
 			this.gameOver();
@@ -266,6 +274,8 @@ const Tetris = {
 		if (this.dropTimer === 0) {
 			this.dropTimer = this.maxDropTimer;
 	
+			this.shouldRedraw = true;
+
 			if(!this.movePieceDown(this.currentPiece)) {
 				this.gameBoard.mergePieceToBoard(this.currentPiece);
 				this.startNextPiece();
@@ -275,6 +285,10 @@ const Tetris = {
 					this.isClearingRow = true;
 					this.score += this.calculateClearScore(isHardDrop, rowsToClear.length);
 					this.clearedLines += rowsToClear.length;
+					this.shouldRedraw = false;
+					for (let c = 0; c < rowsToClear.length; c++) {
+						this.animateRowClear(rowsToClear[c], 5, 5);
+					}
 
 					if (
 						this.clearedLines > 10 && this.level === 1 ||
@@ -290,7 +304,6 @@ const Tetris = {
 				}
 			}
 
-			this.shouldRedraw = true;
 		}
 
 		this.moveTimer--;
@@ -299,10 +312,6 @@ const Tetris = {
 		if (this.shouldRedraw) {
 			this.shouldRedraw = false;
 			TetrisGraphics.draw(this.currentPiece, this.gameBoard.getBoard()); 
-		}
-
-		if (this.audioInitialized) {
-			BMusicPlayer.update();
 		}
 	},
 
