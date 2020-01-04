@@ -9,7 +9,7 @@ const TetrisHUD = {
 	drawNextPiece(piece) {
 		const ox = 0;
 		const oy = 0;
-		const t = piece.getTransform();
+		const t = piece.getOGTransform();
 		const type = piece.getType();
 		let paddingX = 15;
 		let paddingY = 15;

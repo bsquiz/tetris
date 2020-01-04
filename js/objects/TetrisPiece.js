@@ -3,6 +3,7 @@ class TetrisPiece {
 		this.type = type;
 		this.rotation = 0;
 		this.rotations = [];
+		this.ogTransform = [];
 	
 		switch(type) {
 			case Tetris.PieceTypes.SQUARE:
@@ -283,9 +284,10 @@ class TetrisPiece {
 		this.origin = [this.ogOrigin[0], this.ogOrigin[1]];
 		this.dropPreviewOrigin = [this.origin[0], this.origin[1]];
 		this.ogDropPreviewOrigin = [this.origin[0], this.origin[1]];
-
+		this.ogTransform = [...this.transform];
 	}
 
+	getOGTransform() { return this.ogTransform; }
 	getType() { return this.type; }	
 	getOrigin() { return this.origin; }
 	getDropPreviewOrigin() { return this.dropPreviewOrigin; }
@@ -454,5 +456,6 @@ class TetrisPiece {
 		this.origin = [this.ogOrigin[0], this.ogOrigin[1]];
 		this.dropPreviewOrigin = [this.origin[0], this.origin[1]];
 		this.ogDropPreviewOrigin = [this.origin[0], this.origin[1]];
+		this.ogTransform = [...this.transform];
 	}
 }

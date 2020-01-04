@@ -2,65 +2,21 @@
 	<head>
 		<title>tetris</title>
 		<link rel="stylesheet" href="tetris.css">
-<link href="https://fonts.googleapis.com/css?family=Bebas+Neue&display=swap" rel="stylesheet"> 
+		<link href="https://fonts.googleapis.com/css?family=Bebas+Neue&display=swap" rel="stylesheet"> 
+		<meta name="viewport" content="width=device-width, initial-scale=1">
 	</head>
 
 	<body>
-		<div id="wrapper" class="text-center margin-auto flex">
+		<div id="wrapper" class="flex">
 			<div class="m-x-less" id="game">
-				<div class="d-relative solid-border solid-background">
-					<canvas id="backgroundCanvas" width="250" height="600"></canvas>
-					<canvas id="gameCanvas" width="250" height="600"></canvas>
+				<div class="canvas-wrapper d-relative solid-border solid-background">
+					<canvas id="backgroundCanvas" class="full-width full-height" width="250" height="600"></canvas>
+					<canvas id="gameCanvas" class="full-width full-height" width="250" height="600"></canvas>
 				</div>
 
-				<div class="d-sm-none">
-					<div class="d-inline-block w-3"></div>
-					<button class="w-3" id="rotateBtn">&uparrow;</button>
-					<div class="d-inline-block w-3"></div>
-
-					<button class="w-3" id="leftBtn">&leftarrow;</button>
-					<div class="d-inline-block w-3"></div>
-					<button class="w-3" id="rightBtn">&rightarrow;</button>
-
-
-					<div class="d-inline-block w-3"></div>
-					<button class="w-3" id="dropBtn">&downarrow;</button>
-					<div class="d-inline-block w-3"></div>
-
-					<button class="m-y-xl" id="hardDropBtn">hard drop</button>
-				</div>
-
-				<div class="modal solid-border solid-background" id="startScreen">
-					<h1 class="font-xl">Tetris</h1>
-					<table class="margin-auto">
-							<tr>
-								<td>move</td>
-								<td>&leftarrow; &rightarrow;</td>
-							</tr>
-							<tr>
-								<td>rotate</td>
-								<td>&uparrow;</td>
-							</tr>
-							<tr>
-								<td>drop</td>
-								<td>&downarrow;</td>
-							</tr>
-							<tr>
-								<td>hard drop</td>
-								<td>spacebar</td>
-							</tr>
-					</table>		
-					<br>
-					<button onclick="startGame()">PLAY</button>
-				</div>
-
-				<div id="gameOver" class="modal solid-border solid-background hide">
-					<p class="font-xl">game over</p>
-					<button onclick="Tetris.retry()">RETRY</button>
-				</div>
-			</div>
+							</div>
 			
-			<div>
+			<div class="text-center">
 				<div class="p-less margin-bottom solid-border solid-background">
 					<table>
 					<tr>
@@ -92,18 +48,59 @@
 					class="toggle-button text-xl disabled">
 					&sung;
 				</button>
+				<button
+					id="sfxToggleButton"
+					class="toggle-button text-xl">
+					<)
+				</button>
 				</div>
 			</div>
 		</div>
-		<script src="js/objects/TetrisPiece.js"></script>
-		<script src="js/objects/GameBoard.js"></script>
-		<script src="js/game.js"></script>
-		<script src="js/graphics/graphics.js"></script>
-		<script src="js/graphics/hud.js"></script>
-		<script src="js/audio/audio.js"></script>
-		<script src="js/audio/musicPlayer.js"></script>
-		<script src="js/audio/song.js"></script>
-		<script src="js/audio/soundEffects.js"></script>
-		<script src="js/init.js"></script>
+		<div class="modal text-center solid-border solid-background" id="startScreen">
+			<h1 class="font-xl">Tetris</h1>
+			<table class="margin-auto">
+				<tr>
+					<td>move</td>
+					<td>&leftarrow; &rightarrow;</td>
+				</tr>
+				<tr>
+					<td>rotate</td>
+					<td>&uparrow;</td>
+				</tr>
+				<tr>
+					<td>drop</td>
+					<td>&downarrow;</td>
+				</tr>
+				<tr>
+					<td>hard drop</td>
+					<td>spacebar</td>
+				</tr>
+			</table>		
+			<br>
+			<button onclick="startGame()">PLAY</button>
+		</div>
+
+				<div id="gameOver" class="text-center modal solid-border solid-background hide">
+					<p class="font-xl">game over</p>
+					<button onclick="Tetris.retry()">RETRY</button>
+				</div>
+
+		<div class="text-center d-sm-none m-t-m control-buttons">
+			<div class="d-inline-block w-3"></div>
+			<button class="w-3" id="rotateBtn">&uparrow;</button>
+			<div class="d-inline-block w-3"></div>
+
+			<button class="w-3" id="leftBtn">&leftarrow;</button>
+			<div class="d-inline-block w-3"></div>
+			<button class="w-3" id="rightBtn">&rightarrow;</button>
+
+
+			<div class="d-inline-block w-3"></div>
+			<button class="w-3" id="dropBtn">&downarrow;</button>
+			<div class="d-inline-block w-3"></div>
+
+			<button class="m-y-xl" id="hardDropBtn">hard drop</button>
+		</div>
+		<script src="js/all.js"></script>
 	</body>
 </html>

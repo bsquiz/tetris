@@ -68,23 +68,27 @@ const BAudio = {
 		attack = 0,
 		decay = 0
 	) {
-		console.log(`${delay} ${frequency}`);
+		//console.log(`duration ${duration} delay ${delay} f ${frequency} v ${volume} a ${attack} de ${decay}`);
+
+		const changeStartTime = oscillator.ctx.currentTime + delay;
+		const changeEndTime = changeStartTime + duration;
 
 		oscillator.oscillator.frequency.setValueAtTime(
 			frequency,
-			oscillator.ctx.currentTime + delay
+			changeStartTime
+		);
+		
+		oscillator.gain.gain.linearRampToValueAtTime(
+			volume,
+			changeStartTime + attack 
 		);
 		oscillator.gain.gain.setValueAtTime(
 			volume,
-			oscillator.ctx.currentTime + delay - attack 
-		);
-		oscillator.gain.gain.setValueAtTime(
-			volume,
-			oscillator.ctx.currentTime + delay + duration + attack 
+			changeStartTime + attack 
 		); 
 		oscillator.gain.gain.linearRampToValueAtTime(
 			0,
-			oscillator.ctx.currentTime + delay + duration - attack - decay 
+			changeEndTime + attack + decay 
 		);
 	},
 	init() {

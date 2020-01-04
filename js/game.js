@@ -12,7 +12,7 @@ const Tetris = {
 	isRunning: false,
 	shouldRedraw: true,
 	audioInitialized: false,
-	playMusic: false,
+	playMusic: true,
 	canRotatePiece: true,
 	canDropPiece: true,
 	isClearingRow: false,
@@ -27,7 +27,7 @@ const Tetris = {
 	MAX_CLEAR_ROW_TIMER: 30,
 	MAX_DROP_DEBOUNCE_TIMER: 5,
 	GAME_OVER_ANIMATION_TIMER: 3,
-	CLEAR_COL_ANIMATION_TIMER: 3,
+	CLEAR_COL_ANIMATION_TIMER: 5,
 
 	fillRow: 0,
 	fillCol: 0,	
@@ -91,7 +91,7 @@ const Tetris = {
 
 	makeNextPiece(excludePieceType) {
 		const r = Math.floor(Math.random() * 6);
-		let newPiece = this.availablePieces[0];
+		let newPiece = this.availablePieces[r];
 		
 		newPiece.reset();
 
@@ -273,11 +273,12 @@ const Tetris = {
 
 		if (this.dropTimer === 0) {
 			this.dropTimer = this.maxDropTimer;
-	
+
 			this.shouldRedraw = true;
 
 			if(!this.movePieceDown(this.currentPiece)) {
 				this.gameBoard.mergePieceToBoard(this.currentPiece);
+				TetrisGraphics.hidePreview(this.currentPiece);
 				this.startNextPiece();
 				rowsToClear = this.gameBoard.checkClear();
 
@@ -286,6 +287,9 @@ const Tetris = {
 					this.score += this.calculateClearScore(isHardDrop, rowsToClear.length);
 					this.clearedLines += rowsToClear.length;
 					this.shouldRedraw = false;
+
+					TetrisGraphics.hidePreview(this.currentPiece);
+
 					for (let c = 0; c < rowsToClear.length; c++) {
 						this.animateRowClear(rowsToClear[c], 5, 5);
 					}
@@ -303,7 +307,6 @@ const Tetris = {
 					TetrisSoundEffects.playClearSound();
 				}
 			}
-
 		}
 
 		this.moveTimer--;
@@ -344,5 +347,6 @@ const Tetris = {
 		TetrisGraphics.init(this.rows, this.cols);
 		this.initAudio();
 		this.reset();
+		this.toggleMusic();
 	}
 };

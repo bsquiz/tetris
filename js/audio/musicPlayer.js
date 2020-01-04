@@ -67,21 +67,7 @@ const BMusicPlayer = {
 		this.sineWave.masterGain.gain.value = 0;
 	},
 
-	init(song) {
-		const tracks = song.getTracks();
-
-		this.sineWave = BAudio.createOscillator(BAudio.Oscillators.SINE);
-		this.triangleWave = BAudio.createOscillator(BAudio.Oscillators.TRIANGLE);
-		this.noiseWave = BAudio.createOscillator(BAudio.Oscillators.NOISE);
-	
-		this.channels.SINE.oscillator = this.sineWave;
-		this.channels.TRIANGLE.oscillator = this.triangleWave;
-		this.channels.NOISE.oscillator = this.noiseWave;
-
-		this.channels.SINE.track = tracks.TREBLE;
-		this.channels.TRIANGLE.track = tracks.BASS;	
-		this.channels.NOISE.track = tracks.DRUM;	
-
+	scheduleMusic() {
 		let nextTime = 0;
 		for (let prop in this.channels) {
 			if (!this.channels.hasOwnProperty(prop)) continue;
@@ -100,13 +86,40 @@ const BMusicPlayer = {
 					nextTime,
 					pitch,
 					duration,
-					0.1,
-					0.01,
-					0.01
+					0.1
 				);
 
 				nextTime += duration;
 			}
 		}
+	},
+
+	init(song) {
+		const tracks = song.getTracks();
+
+		this.sineWave = BAudio.createOscillator(BAudio.Oscillators.SINE);
+		this.triangleWave = BAudio.createOscillator(BAudio.Oscillators.TRIANGLE);
+		this.noiseWave = BAudio.createOscillator(BAudio.Oscillators.NOISE);
+	
+		this.channels.SINE.oscillator = this.sineWave;
+		this.channels.TRIANGLE.oscillator = this.triangleWave;
+		this.channels.NOISE.oscillator = this.noiseWave;
+
+		this.channels.SINE.track = tracks.TREBLE;
+		this.channels.TRIANGLE.track = tracks.BASS;	
+		this.channels.NOISE.track = tracks.DRUM;	
+
+		let totalMusicTime = 0;
+		for (let i=0; i<this.channels.SINE.track.length; i++) {
+			const duration = this.channels.SINE.track[i].duration * this.tempo;
+
+			totalMusicTime += duration;
+		}
+
+		totalMusicTime *= 1000;
+		this.scheduleMusic();
+	
+		console.log(totalMusicTime);	
+		window.setInterval(() => this.scheduleMusic(), totalMusicTime);
 	}
 }
