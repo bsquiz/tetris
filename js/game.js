@@ -13,26 +13,18 @@ const Tetris = {
 	shouldRedraw: true,
 	audioInitialized: false,
 	playMusic: true,
+	// have to press key each time you want to rotate
 	canRotatePiece: true,
+	// have to press key each time you want to drop 
 	canDropPiece: true,
 	isClearingRow: false,
 	
-	moveTimer: 8,
-	maxMoveTimer: 8,
 	dropTimer: 30,
 	maxDropTimer: 30,
-	clearRowTimer: 60,
-	dropDebounceTimer: 10,
+	keyDebounceTimer: 5,
 
 	MAX_CLEAR_ROW_TIMER: 30,
-	MAX_DROP_DEBOUNCE_TIMER: 5,
-	GAME_OVER_ANIMATION_TIMER: 3,
-	CLEAR_COL_ANIMATION_TIMER: 5,
-
-	fillRow: 0,
-	fillCol: 0,	
-	fillColDirection: 0,
-	changingFillDirection: false,
+	MAX_KEY_DEBOUNCE_TIMER: 5,
 
 	keysDown: {
 		32: false,
@@ -101,56 +93,52 @@ const Tetris = {
 		return newPiece;
 	},
 
-	movePieceDown(piece) {
-		if (piece.moveDown(this.gameBoard.getBoard())) {
+	movePieceDown() {
+		if (this.currentPiece.moveDown(this.gameBoard.getBoard())) {
 			return true;
 		}
-
-		TetrisSoundEffects.playDropSound();
 
 		return false;
 	},
 
-	movePiece(piece,
+	movePiece(
 		moveLeft = false,
 		moveRight = false,
 		moveDown = false,
 		moveUp = false,
 		drop = false) {
-		const origin = piece.getOrigin();
-
-		if (this.dropDebounceTimer > 0) this.dropDebounceTimer--;
+		const origin = this.currentPiece.getOrigin();
+		const board = this.gameBoard.getBoard();
 
 		if (moveLeft && !moveRight) {
-			if (piece.moveLeft(0, this.gameBoard.getBoard())) {
-				if (this.audioInitialized) {
-					TetrisSoundEffects.playMoveSound();
-				}
+			if (this.currentPiece.moveLeft(0, board)) {
+				TetrisSoundEffects.playMoveSound();
 			}
 		}
 
 		if (moveRight && !moveLeft) {
-			if(piece.moveRight(this.cols - 1, this.gameBoard.getBoard())) {
+			if(this.currentPiece.moveRight(this.cols - 1, board)) {
 				TetrisSoundEffects.playMoveSound();
 			}
 		}
 
 		if (moveDown) {
-			this.movePieceDown(piece);	
+			this.movePieceDown();
 		}
 
 		if (moveUp && !moveLeft && !moveRight && this.canRotatePiece) {
 			this.canRotatePiece = false;
-			piece.rotate(this.cols - 1);
+			this.currentPiece.rotate(this.cols - 1);
 			TetrisSoundEffects.playRotateSound();
 		}
 
 		if (drop && this.canDropPiece) {
 			this.canDropPiece = false;
-			piece.drop(this.gameBoard.getBoard());
+			this.currentPiece.drop(board);
+			TetrisSoundEffects.playDropSound();
 		}
 
-		piece.updatePreviewDrop(this.gameBoard.getBoard());
+		this.currentPiece.updatePreviewDrop(board);
 
 		return (moveLeft || moveRight || moveDown || moveUp || drop);
 	},
@@ -177,11 +165,8 @@ const Tetris = {
 		this.clearedLines = 0;
 		this.maxDropTimer = 30;
 		this.dropTimer = this.maxDropTimer;
-		this.fillRow = this.rows - 1;
-		this.fillCol = this.cols - 1;
-		this.fillColDirection = -1;
-		this.changingFillDirection = false;
 
+		this.Animation.reset(this.rows, this.cols);
 		this.gameBoard.reset();	
 
 		this.currentPiece = this.makeNextPiece(0);
@@ -192,49 +177,9 @@ const Tetris = {
 		TetrisHUD.drawStats(this.score, this.clearedLines, this.level);
 		TetrisGraphics.draw(this.currentPiece, this.gameBoard.getBoard()); 
 	},
-
-	animateRowClear(clearedRow, clearColLeft, clearColRight) {
-		window.setTimeout(() => {
-			TetrisGraphics.drawClearedTile(clearedRow, clearColLeft);
-			TetrisGraphics.drawClearedTile(clearedRow, clearColRight);
-
-			clearColLeft--;
-			clearColRight++;
-	
-			if (clearColLeft < 0 || clearColRight > this.cols) {
-				this.isClearingRow = false;	
-			} else {
-				this.animateRowClear(clearedRow, clearColLeft, clearColRight);
-			}
-		}, this.CLEAR_COL_ANIMATION_TIMER);
-	},
-	
-	animateGameOver() {
-		window.setTimeout(() => {
-			if (this.changingFillDirection) {
-				this.changingFillDirection = false;
-				TetrisGraphics.drawGameOverTile(this.fillRow, this.fillCol);
-				this.fillRow--;
-			} else {
-				TetrisGraphics.drawGameOverTile(this.fillRow, this.fillCol);
-				this.fillCol += this.fillColDirection;
-
-				if (this.fillCol === this.cols - 1 || this.fillCol === 0) {
-					this.changingFillDirection = true;
-					this.fillColDirection *= -1;
-				}
-			}
-			if (this.fillRow < 0 && this.fillCol === 0) {
-				document.getElementById('game').className = 'gameover';
-				document.getElementById('gameOver').style.display = 'block';
-			} else {
-				this.animateGameOver();
-			}
-		}, this.GAME_OVER_ANIMATION_TIMER);
-	}, 
 	gameOver() {
 		this.isRunning = false;
-		this.animateGameOver();
+		this.Animation.animateGameOver();
 	},
 
 	retry() {
@@ -243,11 +188,33 @@ const Tetris = {
 		document.getElementById('gameOver').style.display = 'none';
 		this.reset();
 	},	
-		
-	update() {
-		if (!this.isRunning) return;
 
-		if (this.isClearingRow) return;
+	clearRows(rowsToClear) {
+		this.isClearingRow = true;
+		this.clearedLines += rowsToClear.length;
+		this.shouldRedraw = false;
+
+		TetrisGraphics.draw(this.currentPiece, this.gameBoard.getBoard(), false);
+
+		for (let c = 0; c < rowsToClear.length; c++) {
+			this.Animation.animateRowClear(rowsToClear[c], 5, 5);
+		}
+
+		if (
+			this.clearedLines > 10 && this.level === 1 ||
+			this.clearedLines > 20 && this.level === 2 ||
+			this.clearedLines > 30 && this.level === 3 ||
+			this.clearedLines > 40 && this.level === 4
+		) {
+			this.increaseLevel();
+		}
+
+		TetrisHUD.drawStats(this.score, this.clearedLines, this.level);
+		TetrisSoundEffects.playClearSound();
+	},
+	
+	update() {
+		if (!this.isRunning || this.isClearingRow) return;
 
 		if (this.currentPiece.isStuck(this.gameBoard.getBoard())) {
 			this.gameOver();
@@ -256,65 +223,55 @@ const Tetris = {
 		let rowsToClear = 0;
 		let isHardDrop = false;
 
-		if (this.moveTimer === 0) {
-			this.moveTimer = this.maxMoveTimer;
-
+		if (this.keyDebounceTimer === 0) {
+			// force redraw if player moves piece
 			this.shouldRedraw = this.movePiece(
-				this.currentPiece,
 				this.keysDown[this.Keys.LEFT],
 				this.keysDown[this.Keys.RIGHT],
 				this.keysDown[this.Keys.DOWN],
 				this.keysDown[this.Keys.UP],
 				this.keysDown[this.Keys.SPACE]
 			);
+			this.keyDebounceTimer = this.MAX_KEY_DEBOUNCE_TIMER;
 
-			isHardDrop = this.keysDown[this.Keys.DOWN] && this.canDropPiece;
+			if (this.canDropPiece && this.keysDown[this.Keys.SPACE]) {
+				// immediatly trigger piece hit check 
+				this.dropTimer = 0;
+			}
+		} else {
+			this.keyDebounceTimer--;
 		}
 
-		if (this.dropTimer === 0) {
-			this.dropTimer = this.maxDropTimer;
+		isHardDrop = this.keysDown[this.Keys.DOWN] && this.canDropPiece;
 
+		if (this.dropTimer === 0) {
+			// progress piece downwards
+
+			this.dropTimer = this.maxDropTimer;
 			this.shouldRedraw = true;
 
 			if(!this.movePieceDown(this.currentPiece)) {
+				// piece has hit bottom or another piece
+
 				this.gameBoard.mergePieceToBoard(this.currentPiece);
-				TetrisGraphics.hidePreview(this.currentPiece);
 				this.startNextPiece();
 				rowsToClear = this.gameBoard.checkClear();
 
 				if (rowsToClear.length > 0) {
-					this.isClearingRow = true;
 					this.score += this.calculateClearScore(isHardDrop, rowsToClear.length);
-					this.clearedLines += rowsToClear.length;
-					this.shouldRedraw = false;
-
-					TetrisGraphics.hidePreview(this.currentPiece);
-
-					for (let c = 0; c < rowsToClear.length; c++) {
-						this.animateRowClear(rowsToClear[c], 5, 5);
-					}
-
-					if (
-						this.clearedLines > 10 && this.level === 1 ||
-						this.clearedLines > 20 && this.level === 2 ||
-						this.clearedLines > 30 && this.level === 3 ||
-						this.clearedLines > 40 && this.level === 4
-					) {
-						this.increaseLevel();
-					}
-
-					TetrisHUD.drawStats(this.score, this.clearedLines, this.level);
-					TetrisSoundEffects.playClearSound();
-				}
+					this.clearRows(rowsToClear);
+				}	
 			}
+		} else {
+			this.dropTimer--;
 		}
-
-		this.moveTimer--;
-		this.dropTimer--;
 
 		if (this.shouldRedraw) {
 			this.shouldRedraw = false;
-			TetrisGraphics.draw(this.currentPiece, this.gameBoard.getBoard()); 
+			TetrisGraphics.draw(
+				this.currentPiece,
+				this.gameBoard.getBoard()
+			); 
 		}
 	},
 

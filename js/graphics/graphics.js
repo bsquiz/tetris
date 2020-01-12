@@ -7,7 +7,9 @@ const TetrisGraphics = {
 	Colors: {
 		DARK_GRAY: '#565656',
 		LIGHT_GRAY: '#d3d3d3',
-		GRID_GRAY: '#333333'
+		GRID_GRAY: '#333333',
+		BLACK: '#000000',
+		WHITE: '#FFFFFF'
 	},
 
 	SquareDrawX(x, tx) { 	
@@ -17,12 +19,6 @@ const TetrisGraphics = {
 	SquareDrawY(y, ty) {
 		return y * this.colHeight + (ty * this.colHeight);
 	},
-
-	hidePreview(piece) {
-		this.ctx.strokeStyle = this.Colors.GRID_GRAY;
-		this.drawPiece(piece);
-		this.ctx.strokeStyle = this.Colors.LIGHT_GRAY;
-	},	
 
 	drawClearedTile(row, col) {
 		this.ctx.clearRect(
@@ -46,32 +42,43 @@ const TetrisGraphics = {
 		); 
 	},
 
-	drawPiece(piece) {
+	drawPiece(piece, drawDropPreview = true) {
 		const origin = piece.getOrigin();
 		const t = piece.getTransform();
 		const dropPreviewOrigin = piece.getDropPreviewOrigin();
 
+		this.ctx.beginPath();
 		this.ctx.fillStyle = this.PieceColors[piece.getType()];
-
+		this.ctx.strokeStyle = this.Colors.BLACK;
 		t.forEach(transform => {
 			const x = this.SquareDrawX(origin[1], transform[1]);
 			const y = this.SquareDrawY(origin[0], transform[0]);
-			const px = this.SquareDrawX(dropPreviewOrigin[1], transform[1]);
-			const py = this.SquareDrawY(dropPreviewOrigin[0], transform[0]);
 
-			this.ctx.fillRect(
+			this.ctx.rect(
 				x,
 				y,
 				this.colWidth,
 				this.colHeight
 			);
-			this.ctx.strokeRect(
-				px,
-				py,
-				this.colWidth,
-				this.colHeight
-			);
 		});
+		this.ctx.fill();
+		this.ctx.stroke();
+
+		if (drawDropPreview) {	
+			this.ctx.beginPath();
+			this.ctx.strokeStyle = this.Colors.LIGHT_GRAY;
+			t.forEach(transform => {
+				const px = this.SquareDrawX(dropPreviewOrigin[1], transform[1]);
+				const py = this.SquareDrawY(dropPreviewOrigin[0], transform[0]);
+				this.ctx.rect(
+					px,
+					py,
+					this.colWidth,
+					this.colHeight
+				);
+			});
+			this.ctx.();
+		}	
 	},
 
 	/* draws filled pieces that have fallen */ 
@@ -79,11 +86,15 @@ const TetrisGraphics = {
 		let x = 0;
 		let y = 0;
 
+		this.ctx.strokeStyle = this.Colors.BLACK;
+		this.ctx.beginPath();
 		gameBoard.forEach(row => {
 			row.forEach(col => {
 				if (col !== 0) { 
 					this.ctx.fillStyle = this.PieceColors[col];
 					this.ctx.fillRect(x, y, this.colWidth, this.colHeight);
+
+					this.ctx.rect(x, y, this.colWidth, this.colHeight);
 				}
 
 				x += this.colWidth;
@@ -92,6 +103,8 @@ const TetrisGraphics = {
 			y += this.colHeight;
 			x = 0;
 		});
+	
+		this.ctx.stroke();
 	},
 
 	/* draws grid lines */
@@ -122,11 +135,11 @@ const TetrisGraphics = {
 		ctx.stroke();
 	},
 
-	draw(currentPiece, gameBoard) {
+	draw(currentPiece, gameBoard, drawDropPreview = true) {
 		this.ctx.clearRect(0, 0, this.width, this.height);
 
 		this.drawGameBoard(gameBoard);
-		this.drawPiece(currentPiece);
+		this.drawPiece(currentPiece, drawDropPreview);
 	},
 
 	init(rows, cols) {
@@ -136,7 +149,7 @@ const TetrisGraphics = {
 		this.height = $canvas.height;
 		this.ctx = $canvas.getContext("2d");
 		this.ctx.strokeStyle = this.Colors.LIGHT_GRAY;
-		this.ctx.fillStyle = 'white';
+		this.ctx.fillStyle = this.Colors.WHITE;
 
 		this.PieceColors[Tetris.PieceTypes.EMPTY] = "black";
 		this.PieceColors[Tetris.PieceTypes.SQUARE] = "red";

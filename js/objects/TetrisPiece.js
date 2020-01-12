@@ -350,16 +350,13 @@ class TetrisPiece {
 
 		return false;
 	}
-		
+
 	descend(transformOrigin) {
 		transformOrigin[0]++;
 	}
 
 	dropPiece(gameboard, transformOrigin) {
-		let recCount = 50;
-		
-		while (recCount > 0 && !this.checkHitBottom(gameboard, transformOrigin)) {
-			this.recCount--;
+		while (!this.checkHitBottom(gameboard, transformOrigin)) {
 			this.descend(transformOrigin);
 		}
 	}
@@ -367,7 +364,6 @@ class TetrisPiece {
 	updatePreviewDrop(gameboard) {
 		this.dropPreviewOrigin[0] = this.origin[0];
 		this.dropPreviewOrigin[1] = this.origin[1];
-	//	this.dropPreviewOrigin[0] = this.ogDropPreviewOrigin[0];
 		this.dropPiece(gameboard, this.dropPreviewOrigin);
 	}
 

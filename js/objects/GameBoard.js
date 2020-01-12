@@ -29,30 +29,37 @@ class GameBoard {
 
 	checkClear() {
 		const rowsToClear = [];
-
+		/*
+			check from top to bottom
+			[][][]|
+			[][][]|
+			[][][]|
+			[][][]\
+		*/
 		for (let i=0; i<this.board.length; i++) {
 			const row = this.board[i];
-			let totalCount = 0;
+			let shouldClear = true;
 
-			row.forEach(column => {
-				if (column !== Tetris.PieceTypes.EMPTY) {
-					totalCount++;
+			for (let j=0; j<row.length; j++ ) {
+				if (row[j] === Tetris.PieceTypes.EMPTY) {
+					shouldClear = false;
+
+					break;
 				}
-			});
+			}
 
-			if (totalCount === this.cols) {
+			if (shouldClear) {
 				rowsToClear.push(i);
-			
 				/*
 				Work backwards to first row,
 				swapping cleared row with row before it.
-				*/	
-				for (let j=i; j>0; j--) {
-					this.board[j] = this.board[j-1];
+				*/
+				for (let j=i; j>1; j--) {
+					this.board[j] = [...this.board[j-1]];
 				}
 			}
 		}
-	
+
 		return rowsToClear;
 	}
 

@@ -1,7 +1,9 @@
 <html>
 	<head>
 		<title>tetris</title>
-		<link rel="stylesheet" href="tetris.css">
+		<link rel="stylesheet" href="css/shapes.css">
+		<link rel="stylesheet" href="css/tetris.css">
+		<link rel="stylesheet" href="css/startScreen.css">
 		<link href="https://fonts.googleapis.com/css?family=Bebas+Neue&display=swap" rel="stylesheet"> 
 		<meta name="viewport" content="width=device-width, initial-scale=1">
 	</head>
@@ -13,8 +15,7 @@
 					<canvas id="backgroundCanvas" class="full-width full-height" width="250" height="600"></canvas>
 					<canvas id="gameCanvas" class="full-width full-height" width="250" height="600"></canvas>
 				</div>
-
-							</div>
+			</div>
 			
 			<div class="text-center">
 				<div class="p-less margin-bottom solid-border solid-background">
@@ -42,7 +43,6 @@
 					class="toggle-button text-xl">
 					&blacktriangleright;
 					</button>
-						
 				<button
 					id="musicToggleButton"
 					class="toggle-button text-xl disabled">
@@ -57,7 +57,42 @@
 			</div>
 		</div>
 		<div class="modal text-center solid-border solid-background" id="startScreen">
-			<h1 class="font-xl">Tetris</h1>
+			<div class="flex flex-column full-height">
+			<div class="logo-image">
+				<h1>Tetris</h1>
+				<div class="spires">
+				<div class="spire">
+						<div class="spire-top half-rhombus">
+						</div>
+						<div class="spire-body">
+							<div class="window left"></div>	
+							<div class="window"></div>	
+							<div class="window right"></div>	
+						</div>
+				</div>
+				<div class="spire">
+				<div class="spire-top zigzags">
+				</div>
+				<div class="spire-body">
+					<div class="window left"></div>	
+					<div class="window"></div>	
+					<div class="window right"></div>	
+				</div>
+			</div>
+
+			<div class="spire">
+				<div class="cross"></div>
+				<div class="spire-top steps">
+				</div>
+				<div class="spire-body">
+					<div class="window left"></div>	
+					<div class="window"></div>	
+					<div class="window right"></div>	
+				</div>
+			</div>
+
+			</div>
+			</div>
 			<table class="margin-auto">
 				<tr>
 					<td>move</td>
@@ -78,26 +113,44 @@
 			</table>		
 			<br>
 			<button onclick="startGame()">PLAY</button>
+			</div>
 		</div>
 
-				<div id="gameOver" class="text-center modal solid-border solid-background hide">
+		<div id="gameOver" class="fade-in text-center modal solid-border solid-background hide">
 					<p class="font-xl">game over</p>
+					<table class="margin-auto">
+					<tr>
+						<td>score</td>
+						<td id="finalScore">0</td>
+					</tr>
+					<tr>
+						<td># of lines</td>
+						<td id="finalLines">0</td>
+					</tr>
+					<tr>
+						<td>level</td>
+						<td id="finalLevel">0</td>
+					</tr>
+					</table>
 					<button onclick="Tetris.retry()">RETRY</button>
 				</div>
 
 		<div class="text-center d-sm-none m-t-m control-buttons">
-			<div class="d-inline-block w-3"></div>
-			<button class="w-3" id="rotateBtn">&uparrow;</button>
-			<div class="d-inline-block w-3"></div>
-
-			<button class="w-3" id="leftBtn">&leftarrow;</button>
-			<div class="d-inline-block w-3"></div>
-			<button class="w-3" id="rightBtn">&rightarrow;</button>
-
-
-			<div class="d-inline-block w-3"></div>
-			<button class="w-3" id="dropBtn">&downarrow;</button>
-			<div class="d-inline-block w-3"></div>
+			<div class="flex dpad-row">
+				<div class="equal-flex"></div>
+				<button class="equal-flex triangle-up" id="rotateBtn"></button>
+				<div class="equal-flex"></div>
+			</div>
+			<div class="flex dpad-row">
+				<button class="equal-flex triangle-left" id="leftBtn"></button>
+				<div class="equal-flex"></div>
+				<button class="equal-flex triangle-right" id="rightBtn"></button>
+			</div>
+			<div class="flex dpad-row">
+				<div class="equal-flex"></div>
+				<button class="equal-flex triangle-down" id="dropBtn"></button>
+				<div class="equal-flex"></div>
+			</div>
 
 			<button class="m-y-xl" id="hardDropBtn">hard drop</button>
 		</div>
