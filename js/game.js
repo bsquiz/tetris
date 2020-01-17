@@ -9,6 +9,8 @@ const Tetris = {
 	nextPiece: {},
 	availablePieces: [],
 
+	$highScoreName: null,
+
 	isRunning: false,
 	shouldRedraw: true,
 	audioInitialized: false,
@@ -178,14 +180,17 @@ const Tetris = {
 		TetrisGraphics.draw(this.currentPiece, this.gameBoard.getBoard()); 
 	},
 	gameOver() {
+		document.getElementById('finalScore').innerHTML = this.score;
+		document.getElementById('finalLines').innerHTML = this.clearedLines;
+		document.getElementById('finalLevel').innerHTML = this.level;
 		this.isRunning = false;
 		this.Animation.animateGameOver();
 	},
 
 	retry() {
 		this.isRunning = true;
-		document.getElementById('game').className = '';
-		document.getElementById('gameOver').style.display = 'none';
+		$removeClass(document.getElementById('game'), 'see-through');
+		$addClass(document.getElementById('gameOver'), 'hide');
 		this.reset();
 	},	
 
@@ -194,7 +199,7 @@ const Tetris = {
 		this.clearedLines += rowsToClear.length;
 		this.shouldRedraw = false;
 
-		TetrisGraphics.draw(this.currentPiece, this.gameBoard.getBoard(), false);
+	//	TetrisGraphics.draw(this.currentPiece, this.gameBoard.getBoard(), false);
 
 		for (let c = 0; c < rowsToClear.length; c++) {
 			this.Animation.animateRowClear(rowsToClear[c], 5, 5);
@@ -260,6 +265,7 @@ const Tetris = {
 				if (rowsToClear.length > 0) {
 					this.score += this.calculateClearScore(isHardDrop, rowsToClear.length);
 					this.clearRows(rowsToClear);
+					this.shouldRedraw = false;
 				}	
 			}
 		} else {
@@ -290,7 +296,16 @@ const Tetris = {
 		return this.isRunning = !this.isRunning;
 	},
 
+	loadScores() {},
+
+	saveScore() {},
+
 	init() {
+		this.$finalScore = document.getElementById('finalScore');
+		this.$finalLines = document.getElementById('finalLines');
+		this.$finalLevel = document.getElementById('finalLevel');
+		this.$highScoreName = document.getElementById('highScoreName');
+
 		this.availablePieces = [
 			new TetrisPiece(1),
 			new TetrisPiece(2),

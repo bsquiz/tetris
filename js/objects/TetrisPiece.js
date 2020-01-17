@@ -449,9 +449,10 @@ class TetrisPiece {
 	}
 	
 	reset() {
-		this.origin = [this.ogOrigin[0], this.ogOrigin[1]];
-		this.dropPreviewOrigin = [this.origin[0], this.origin[1]];
-		this.ogDropPreviewOrigin = [this.origin[0], this.origin[1]];
-		this.ogTransform = [...this.transform];
+		this.origin = [...this.ogOrigin];
+		this.dropPreviewOrigin = [...this.origin];
+		this.ogDropPreviewOrigin = [...this.origin];
+		this.transform = [...this.ogTransform];
+		this.rotation = 0;
 	}
 }

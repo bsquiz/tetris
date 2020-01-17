@@ -32,18 +32,22 @@ const TetrisHUD = {
 			paddingX = 27;
 			paddingY = 40;
 		} 
+
+		this.nextPieceCtx.beginPath();
  
 		t.forEach(transform => {
 			const x = TetrisGraphics.SquareDrawX(ox, transform[1]);
 			const y = TetrisGraphics.SquareDrawY(oy, transform[0]);
 			
-			this.nextPieceCtx.fillRect(
+			this.nextPieceCtx.rect(
 				x + paddingX,
 				y + paddingY,
 				TetrisGraphics.colWidth,
 				TetrisGraphics.colHeight
 			);
 		});
+		this.nextPieceCtx.fill();
+		this.nextPieceCtx.stroke();
 	},
 
 	drawStats(score, lines, level) {

@@ -77,7 +77,7 @@ const TetrisGraphics = {
 					this.colHeight
 				);
 			});
-			this.ctx.();
+			this.ctx.stroke();
 		}	
 	},
 

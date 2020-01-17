@@ -704,18 +704,22 @@ const TetrisHUD = {
 			paddingX = 27;
 			paddingY = 40;
 		} 
+
+		this.nextPieceCtx.beginPath();
  
 		t.forEach(transform => {
 			const x = TetrisGraphics.SquareDrawX(ox, transform[1]);
 			const y = TetrisGraphics.SquareDrawY(oy, transform[0]);
 			
-			this.nextPieceCtx.fillRect(
+			this.nextPieceCtx.rect(
 				x + paddingX,
 				y + paddingY,
 				TetrisGraphics.colWidth,
 				TetrisGraphics.colHeight
 			);
 		});
+		this.nextPieceCtx.fill();
+		this.nextPieceCtx.stroke();
 	},
 
 	drawStats(score, lines, level) {
@@ -1258,10 +1262,11 @@ class TetrisPiece {
 	}
 	
 	reset() {
-		this.origin = [this.ogOrigin[0], this.ogOrigin[1]];
-		this.dropPreviewOrigin = [this.origin[0], this.origin[1]];
-		this.ogDropPreviewOrigin = [this.origin[0], this.origin[1]];
-		this.ogTransform = [...this.transform];
+		this.origin = [...this.ogOrigin];
+		this.dropPreviewOrigin = [...this.origin];
+		this.ogDropPreviewOrigin = [...this.origin];
+		this.transform = [...this.ogTransform];
+		this.rotation = 0;
 	}
 }
 const Tetris = {
@@ -1274,6 +1279,8 @@ const Tetris = {
 	currentPiece: {}, 
 	nextPiece: {},
 	availablePieces: [],
+
+	$highScoreName: null,
 
 	isRunning: false,
 	shouldRedraw: true,
@@ -1444,14 +1451,17 @@ const Tetris = {
 		TetrisGraphics.draw(this.currentPiece, this.gameBoard.getBoard()); 
 	},
 	gameOver() {
+		document.getElementById('finalScore').innerHTML = this.score;
+		document.getElementById('finalLines').innerHTML = this.clearedLines;
+		document.getElementById('finalLevel').innerHTML = this.level;
 		this.isRunning = false;
 		this.Animation.animateGameOver();
 	},
 
 	retry() {
 		this.isRunning = true;
-		document.getElementById('game').className = '';
-		document.getElementById('gameOver').style.display = 'none';
+		$removeClass(document.getElementById('game'), 'see-through');
+		$addClass(document.getElementById('gameOver'), 'hide');
 		this.reset();
 	},	
 
@@ -1460,7 +1470,7 @@ const Tetris = {
 		this.clearedLines += rowsToClear.length;
 		this.shouldRedraw = false;
 
-		TetrisGraphics.draw(this.currentPiece, this.gameBoard.getBoard(), false);
+	//	TetrisGraphics.draw(this.currentPiece, this.gameBoard.getBoard(), false);
 
 		for (let c = 0; c < rowsToClear.length; c++) {
 			this.Animation.animateRowClear(rowsToClear[c], 5, 5);
@@ -1526,6 +1536,7 @@ const Tetris = {
 				if (rowsToClear.length > 0) {
 					this.score += this.calculateClearScore(isHardDrop, rowsToClear.length);
 					this.clearRows(rowsToClear);
+					this.shouldRedraw = false;
 				}	
 			}
 		} else {
@@ -1556,7 +1567,16 @@ const Tetris = {
 		return this.isRunning = !this.isRunning;
 	},
 
+	loadScores() {},
+
+	saveScore() {},
+
 	init() {
+		this.$finalScore = document.getElementById('finalScore');
+		this.$finalLines = document.getElementById('finalLines');
+		this.$finalLevel = document.getElementById('finalLevel');
+		this.$highScoreName = document.getElementById('highScoreName');
+
 		this.availablePieces = [
 			new TetrisPiece(1),
 			new TetrisPiece(2),
@@ -1620,8 +1640,8 @@ const Tetris = {
 				}
 			}
 			if (this.fillRow < 0 && this.fillCol === 0) {
-				document.getElementById('game').className = 'gameover';
-				document.getElementById('gameOver').style.display = 'block';
+				$addClass(document.getElementById('game'), 'see-through');
+				$removeClass(document.getElementById('gameOver'), 'hide');
 			} else {
 				this.animateGameOver();
 			}

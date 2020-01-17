@@ -1,0 +1,59 @@
+<div class="flex m-less" id="game">
+	<!-- draw area -->
+	<div class="canvas-wrapper d-relative solid-border solid-background">
+		<canvas
+			id="backgroundCanvas"
+			class="full-width full-height"
+			width="250"
+			height="600"></canvas>
+		<canvas
+			id="gameCanvas"
+			class="full-width full-height"
+			width="250"
+			height="600"></canvas>
+	</div>
+
+	<!-- HUD --> 
+	<div class="m-l-less text-center">
+		<div class="p-less solid-border solid-background">
+			<table>
+				<tr>
+					<td>Score </td>
+					<td id="scoreVal">0</td>
+				</tr>
+				<tr>
+					<td>Level </td>
+					<td id="levelVal">0</td>
+				</tr>
+				<tr>
+					<td>Lines </td>
+					<td id="linesVal">0</td>
+				</tr>
+			</table>
+		</div>
+
+		<div class="solid-border margin-bottom solid-background">
+			<div>Next</div>
+				<canvas id="nextPieceCanvas" width="80" height="100"></canvas>
+			</div>
+			<!-- menu buttons -->
+			<div class="text-left">
+				<button
+					id="pauseToggleButton"
+					class="toggle-button text-xl">
+					&blacktriangleright;
+				</button>
+				<button
+					id="musicToggleButton"
+					class="toggle-button text-xl disabled">
+					&sung;
+				</button>
+				<button
+					id="sfxToggleButton"
+					class="toggle-button text-xl">
+					<)
+				</button>
+			</div>
+		</div>
+	</div>
+</div>

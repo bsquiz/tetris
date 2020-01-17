@@ -45,8 +45,8 @@
 				}
 			}
 			if (this.fillRow < 0 && this.fillCol === 0) {
-				document.getElementById('game').className = 'gameover';
-				document.getElementById('gameOver').style.display = 'block';
+				$addClass(document.getElementById('game'), 'see-through');
+				$removeClass(document.getElementById('gameOver'), 'hide');
 			} else {
 				this.animateGameOver();
 			}
