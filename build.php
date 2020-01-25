@@ -1,6 +1,6 @@
 <?php
 $html = fopen('html/tetrisTemplate.html', 'r+');
-$files = array("gameArea.html", "mobileButtons.html", "modals.html");
+$files = array("startScreen.html", "gameArea.html", "modals.html");
 $output = fopen('tetris.html', 'w');
 
 while (!feof($html)) {
@@ -43,6 +43,6 @@ while (!feof($html)) {
 fflush($output);
 fclose($output);
 
-shell_exec('cat css/shapes.css css/startScreen.css css/tetris.css');
+shell_exec('cat css/shapes.css css/startScreen.css css/tetris.css > all.css');
 shell_exec('cat js/audio/audio.js js/audio/soundEffects.js js/audio/song.js js/audio/musicPlayer.js js/graphics/graphics.js js/graphics/hud.js js/objects/GameBoard.js js/objects/TetrisPiece.js js/game.js js/animation.js js/init.js > all.js');
 ?>

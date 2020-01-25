@@ -1,3 +1,15 @@
+#startScreen {
+	max-width: 600px;
+}
+.logo-image .wall, .spire-top::before, .spire-top::after {
+	border: solid thin black;
+}
+.logo-image h1 {
+	font-size: 3em;
+	margin: 5px;
+	position: absolute;
+	color: black;
+}
 .logo-image .window {
 	background: black;
 	border-radius: 50% 50% 0 0;
@@ -6,17 +18,36 @@
 	flex: 1;
 	display: flex;
 }
+.spires.background {
+        position: relative;
+        height: 0%;
+	top: -110px;
+}
+.spires.background .spire-body,
+	.spires.background .spire-body::before,
+	.spires.background .spire-body::after,
+	.spires.background .spire-top,
+	.spires.background .cross {
+        background: black;
+	border: 0;
+}
 .spire {
         width: 50px;
         height: 150px;
         margin-left: 2%;
+	margin-top: 5px;
+}
+.spires.background .spire {
+	height: 50px;
+	width: 17px;
 }
 .logo-image .wall {
-	width: 100%;
-	height: 20px;
+	margin-left: 50%;
+	width: 50%;
+	height: 30px;
 	margin-top: -27px;
 	position: relative;
-        background-color: #0033cc;
+        background-color: #36c;
 	display: flex;
 }
 .wall .window {
@@ -27,25 +58,7 @@
 }
 .spires.foreground {
 	flex-direction: row-reverse;
-}
-.spires.background {
-	padding-left: 25%;
-	margin-bottom: -34%;
-}
-.spires.background::after {
-	background: gray;
-	border-radius: 50% 0 0 0;
-	height: 35%;
-}
-.spires.background .spire div,
-.spires.background .spire-body::before,
-.spires.background .spire-body::after {
-	background: gray !important;
-	border-color: gray !important;
-}
-.spires.background .spire {
-	width: 25px;
-	height: 75px;
+	background: linear-gradient(0deg, #d53369 0%, #daae51 100%);
 }
 
 .spire-top {
@@ -88,17 +101,17 @@
 	linear-gradient(155deg, #C90032 10px, transparent 10px);
 }
 .spire-top.half-rhombus {
-background: #36c;
-background:
-linear-gradient(115deg, transparent 75%, rgba(255,255,255,.8) 75%) 0 0,
-linear-gradient(245deg, transparent 75%, rgba(255,255,255,.8) 75%) 0 0,
-linear-gradient(115deg, transparent 75%, rgba(255,255,255,.8) 75%) 7px -15px,
-linear-gradient(245deg, transparent 75%, rgba(255,255,255,.8) 75%) 7px -15px,
-#36c;
-background-size: 13px 30px;
+	background: #36c;
+	background:
+	linear-gradient(115deg, transparent 75%, rgba(255,255,255,.8) 75%) 0 0,
+	linear-gradient(245deg, transparent 75%, rgba(255,255,255,.8) 75%) 0 0,
+	linear-gradient(115deg, transparent 75%, rgba(255,255,255,.8) 75%) 7px -15px,
+	linear-gradient(245deg, transparent 75%, rgba(255,255,255,.8) 75%) 7px -15px,
+	#36c;
+	background-size: 13px 30px;
 }
 .spire-body {
-        background-color: #0033cc;
+        background-color: #36c;
         width: 50%;
         height: 40%;
         border-top: solid thin;
@@ -120,13 +133,15 @@ background-size: 13px 30px;
         top: 5%;
 }
 .spire-body::before {
-        background-color: #001a66;
+        background-color: #1E3D7B;
         left: -50%;
+	border-right: 0;
 }
 .spire-body::after {
-        background-color: #1a53ff;
+        background-color: #2954AA;
         left: 100%;
         z-index: -1;
+	border-left: 0;
 }
 .spire-body .window {
 	position: absolute;

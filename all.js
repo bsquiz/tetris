@@ -8,6 +8,12 @@ const BAudio = {
 		SAWTOOTH: "sawtooth",
 		NOISE: "noise"
 	},
+	loadAudioFile(filename) {
+		const snd = document.createElement('audio');
+	
+		snd.src = filename;	
+		return snd;
+	},
 	createNoiseOutput() {
 		const real = new Float32Array(2);
 		const imag = new Float32Array(2);
@@ -659,12 +665,13 @@ const TetrisGraphics = {
 		this.ctx.fillStyle = this.Colors.WHITE;
 
 		this.PieceColors[Tetris.PieceTypes.EMPTY] = "black";
-		this.PieceColors[Tetris.PieceTypes.SQUARE] = "red";
-		this.PieceColors[Tetris.PieceTypes.L] = "green";
-		this.PieceColors[Tetris.PieceTypes.LINE] = "blue";
-		this.PieceColors[Tetris.PieceTypes.Z] = "yellow";
+		this.PieceColors[Tetris.PieceTypes.SQUARE] = "yellow";
+		this.PieceColors[Tetris.PieceTypes.L] = "blue";
+		this.PieceColors[Tetris.PieceTypes.BACKWARDS_L] = "orange";
+		this.PieceColors[Tetris.PieceTypes.LINE] = "teal";
+		this.PieceColors[Tetris.PieceTypes.Z] = "green";
 		this.PieceColors[Tetris.PieceTypes.TRIANGLE] = "purple";
-		this.PieceColors[Tetris.PieceTypes.S] = "orange"
+		this.PieceColors[Tetris.PieceTypes.S] = "darkSlateBlue"
 
 		this.drawBackground(rows, cols, this.colWidth, this.colHeight);
 		TetrisHUD.init();
@@ -691,7 +698,7 @@ const TetrisHUD = {
 
 			
 		// fixes drawing starting offset
-		if (type === Tetris.PieceTypes.L) {
+		if (type === Tetris.PieceTypes.L || type === Tetris.PieceTypes.BACKWARDS_L) {
 			paddingY = 60;
 		} else if (type === Tetris.PieceTypes.LINE) {
 			paddingY = 60;
@@ -704,6 +711,10 @@ const TetrisHUD = {
 			paddingX = 27;
 			paddingY = 40;
 		} 
+		
+		if (type === Tetris.PieceTypes.BACKWARDS_L) {
+			paddingX = 27;
+		}
 
 		this.nextPieceCtx.beginPath();
  
@@ -1046,6 +1057,51 @@ class TetrisPiece {
 					]
 				];
 			break;
+			case Tetris.PieceTypes.BACKWARDS_L:
+				//   [] 
+				//   [] 
+				// [][] <- origin
+				this.ogOrigin = [2,5];
+				this.transform = [
+					[0,0],
+					[0,-1],
+					[-1,0],
+					[-2,0]
+				];
+				this.rotations = [
+					//   [] 
+					//   [] 
+					// [][]
+					[
+						[0,0],
+						[0,-1],
+						[-1,0],
+						[-2,0]	
+					],[
+						// []
+						// [][][]
+						[0,0],
+						[0,1],
+						[0,2],
+						[-1,0]
+					],[
+						// [][]
+						// []
+						// []
+						[0,0],
+						[0,1],
+						[1,0],
+						[2,0]
+					],[
+						// [][][]
+						//     []
+						[0,0],
+						[0,-1],
+						[0,-2],
+						[1,0]
+					]
+				];
+			break;
 			case Tetris.PieceTypes.TRIANGLE:
 				//   []
 				// [][][] <-- origin is middle block
@@ -1280,6 +1336,12 @@ const Tetris = {
 	nextPiece: {},
 	availablePieces: [],
 
+	touchControls: false,
+	touchStartX: 0,
+	touchStartY: 0,
+	touchStartDropY: 0,
+	dragThreshold: 25,
+
 	$highScoreName: null,
 
 	isRunning: false,
@@ -1292,8 +1354,8 @@ const Tetris = {
 	canDropPiece: true,
 	isClearingRow: false,
 	
-	dropTimer: 30,
-	maxDropTimer: 30,
+	dropTimer: 50,
+	maxDropTimer: 50,
 	keyDebounceTimer: 5,
 
 	MAX_CLEAR_ROW_TIMER: 30,
@@ -1314,7 +1376,8 @@ const Tetris = {
 		"Z": 3,
 		"L": 4,
 		"TRIANGLE": 5,
-		"S": 6
+		"S": 6,
+		"BACKWARDS_L": 7
 	},
 	Keys: {
 		LEFT: 37,
@@ -1351,17 +1414,21 @@ const Tetris = {
 	},
 
 	calculateClearScore(hardDrop = false, numLinesCleared = 1) {
-		return 10 * (hardDrop ? 2 : 1) * numLinesCleared;
+		let clearScore = 10 * (hardDrop ? 2 : 1) * numLinesCleared;
+	
+		/* 'tetris' clear */	
+		if (numLinesCleared === 4) {
+			clearScore *= 2;
+		}
+		
+		return clearScore;
 	},
 
 	makeNextPiece(excludePieceType) {
-		const r = Math.floor(Math.random() * 6);
+		const r = Math.floor(Math.random() * 7);
 		let newPiece = this.availablePieces[r];
 		
 		newPiece.reset();
-
-//		while(newPiece.getType() === excludePieceType) {
-//		}
 		
 		return newPiece;
 	},
@@ -1477,10 +1544,10 @@ const Tetris = {
 		}
 
 		if (
-			this.clearedLines > 10 && this.level === 1 ||
-			this.clearedLines > 20 && this.level === 2 ||
-			this.clearedLines > 30 && this.level === 3 ||
-			this.clearedLines > 40 && this.level === 4
+			this.clearedLines > 20 && this.level === 1 ||
+			this.clearedLines > 50 && this.level === 2 ||
+			this.clearedLines > 100 && this.level === 3 ||
+			this.clearedLines > 200 && this.level === 4
 		) {
 			this.increaseLevel();
 		}
@@ -1508,6 +1575,13 @@ const Tetris = {
 				this.keysDown[this.Keys.UP],
 				this.keysDown[this.Keys.SPACE]
 			);
+			
+			if (this.shouldRedraw && this.touchControls) {
+				this.setKeyDown(this.Keys.LEFT, false);
+				this.setKeyDown(this.Keys.RIGHT, false);
+				this.setKeyDown(this.Keys.DOWN, false);
+			}
+
 			this.keyDebounceTimer = this.MAX_KEY_DEBOUNCE_TIMER;
 
 			if (this.canDropPiece && this.keysDown[this.Keys.SPACE]) {
@@ -1583,7 +1657,8 @@ const Tetris = {
 			new TetrisPiece(3),
 			new TetrisPiece(4),
 			new TetrisPiece(5),
-			new TetrisPiece(6)
+			new TetrisPiece(6),
+			new TetrisPiece(7)
 		];
 		this.gameBoard = new GameBoard(this.rows, this.cols);
 		this.gameBoard.init();
@@ -1714,50 +1789,66 @@ function addGameEventListeners() {
 	const $musicToggleButton = $('musicToggleButton');
 	const $pauseToggleButton = $('pauseToggleButton');
 	const $sfxToggleButton = $('sfxToggleButton');
+	const $gameCanvas = $('gameCanvas');
 
-	$on($leftBtn, "touchstart", function(e) {
+	$on($gameCanvas, "touchstart", e => {
 		e.preventDefault();
-		Tetris.setKeyDown(Tetris.Keys.LEFT, true);
-	});
-	$on($leftBtn, "touchend", function(e) {
-		e.preventDefault();
-		Tetris.setKeyDown(Tetris.Keys.LEFT, false);
-	});
 
-	$on($rightBtn, "touchstart", function(e) {
-		e.preventDefault();
-		Tetris.setKeyDown(Tetris.Keys.RIGHT, true);
-	});
-	$on($rightBtn, "touchend", function(e) {
-		e.preventDefault();
-		Tetris.setKeyDown(Tetris.Keys.RIGHT, false);
-	});
-
-	$on($rotateBtn, "touchstart", function(e) {
-		e.preventDefault();
-		Tetris.setKeyDown(Tetris.Keys.UP, true);
-	});
-	$on($rotateBtn, "touchend", function(e) {
-		e.preventDefault();
+		Tetris.touchControls = true;
+		Tetris.touchStartX = e.touches[0].pageX;
+		Tetris.touchStartY = e.touches[0].pageY;
+		Tetris.touchStartDropY = e.touches[0].pageY;
+		Tetris.shouldTouchRotate = true;
 		Tetris.setKeyDown(Tetris.Keys.UP, false);
-	});
-
-	$on($dropBtn, "touchstart", function(e) {
-		e.preventDefault();
-		Tetris.setKeyDown(Tetris.Keys.DOWN, true);
-	});
-	$on($dropBtn, "touchend", function(e) {
-		e.preventDefault();
-		Tetris.setKeyDown(Tetris.Keys.DOWN, false);
-	});
-
-	$on($hardDropBtn, "touchstart", function(e) {
-		e.preventDefault();
-		Tetris.setKeyDown(Tetris.Keys.SPACE, true);
-	});
-	$on($hardDropBtn, "touchend", function(e) {
-		e.preventDefault();
 		Tetris.setKeyDown(Tetris.Keys.SPACE, false);
+	});
+	
+	$on($gameCanvas, "touchmove", e => {
+		const x = e.touches[0].pageX;
+		const y = e.touches[0].pageY;
+		const diffX = x - Tetris.touchStartX;
+		const diffY = y - Tetris.touchStartY;
+
+		if (Math.abs(diffX) > Tetris.dragThreshold) {
+			Tetris.touchStartX = x;
+
+			if (diffX < 0) {
+				Tetris.setKeyDown(Tetris.Keys.LEFT, true);	
+			} else {
+				Tetris.setKeyDown(Tetris.Keys.RIGHT, true);	
+			}
+			Tetris.shouldTouchRotate = false;
+		}
+
+		if (Math.abs(diffY) > Tetris.dragThreshold) {
+			Tetris.touchStartY = y;
+
+			if (diffY > 0) {
+				Tetris.setKeyDown(Tetris.Keys.DOWN, true);
+			}
+
+			Tetris.shouldTouchRotate = false;
+		}
+	
+	});
+
+	$on($gameCanvas, "touchend", e => {
+		Tetris.setKeyDown(Tetris.Keys.LEFT, false);
+		Tetris.setKeyDown(Tetris.Keys.RIGHT, false);
+		Tetris.setKeyDown(Tetris.Keys.DOWN, false);
+
+		/* swipe down check */
+		if (
+			Math.abs(
+				Tetris.touchStartDropY - Tetris.touchStartY
+			) > Tetris.dragThreshold * 4
+			) {
+				Tetris.setKeyDown(Tetris.Keys.SPACE, true);
+		}
+
+		if (Tetris.shouldTouchRotate) {
+			Tetris.setKeyDown(Tetris.Keys.UP, true);
+		}
 	});
 
 	$on($musicToggleButton, "click", toggleMusic);
@@ -1774,7 +1865,9 @@ function addGameEventListeners() {
 function startGame() {
 	Tetris.init();
 	Tetris.start();
-	$addClass($('startScreen'), 'hide');
+	TetrisSoundEffects.mute();
+	document.getElementsByTagName('body')[0].removeChild($('startScreen'));
+	$removeClass($('game'), 'hide');
 
 	window.requestAnimationFrame(updateGame);
 }

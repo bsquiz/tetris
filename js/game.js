@@ -9,6 +9,12 @@ const Tetris = {
 	nextPiece: {},
 	availablePieces: [],
 
+	touchControls: false,
+	touchStartX: 0,
+	touchStartY: 0,
+	touchStartDropY: 0,
+	dragThreshold: 25,
+
 	$highScoreName: null,
 
 	isRunning: false,
@@ -21,8 +27,8 @@ const Tetris = {
 	canDropPiece: true,
 	isClearingRow: false,
 	
-	dropTimer: 30,
-	maxDropTimer: 30,
+	dropTimer: 50,
+	maxDropTimer: 50,
 	keyDebounceTimer: 5,
 
 	MAX_CLEAR_ROW_TIMER: 30,
@@ -43,7 +49,8 @@ const Tetris = {
 		"Z": 3,
 		"L": 4,
 		"TRIANGLE": 5,
-		"S": 6
+		"S": 6,
+		"BACKWARDS_L": 7
 	},
 	Keys: {
 		LEFT: 37,
@@ -80,17 +87,21 @@ const Tetris = {
 	},
 
 	calculateClearScore(hardDrop = false, numLinesCleared = 1) {
-		return 10 * (hardDrop ? 2 : 1) * numLinesCleared;
+		let clearScore = 10 * (hardDrop ? 2 : 1) * numLinesCleared;
+	
+		/* 'tetris' clear */	
+		if (numLinesCleared === 4) {
+			clearScore *= 2;
+		}
+		
+		return clearScore;
 	},
 
 	makeNextPiece(excludePieceType) {
-		const r = Math.floor(Math.random() * 6);
+		const r = Math.floor(Math.random() * 7);
 		let newPiece = this.availablePieces[r];
 		
 		newPiece.reset();
-
-//		while(newPiece.getType() === excludePieceType) {
-//		}
 		
 		return newPiece;
 	},
@@ -206,10 +217,10 @@ const Tetris = {
 		}
 
 		if (
-			this.clearedLines > 10 && this.level === 1 ||
-			this.clearedLines > 20 && this.level === 2 ||
-			this.clearedLines > 30 && this.level === 3 ||
-			this.clearedLines > 40 && this.level === 4
+			this.clearedLines > 20 && this.level === 1 ||
+			this.clearedLines > 50 && this.level === 2 ||
+			this.clearedLines > 100 && this.level === 3 ||
+			this.clearedLines > 200 && this.level === 4
 		) {
 			this.increaseLevel();
 		}
@@ -237,6 +248,13 @@ const Tetris = {
 				this.keysDown[this.Keys.UP],
 				this.keysDown[this.Keys.SPACE]
 			);
+			
+			if (this.shouldRedraw && this.touchControls) {
+				this.setKeyDown(this.Keys.LEFT, false);
+				this.setKeyDown(this.Keys.RIGHT, false);
+				this.setKeyDown(this.Keys.DOWN, false);
+			}
+
 			this.keyDebounceTimer = this.MAX_KEY_DEBOUNCE_TIMER;
 
 			if (this.canDropPiece && this.keysDown[this.Keys.SPACE]) {
@@ -312,7 +330,8 @@ const Tetris = {
 			new TetrisPiece(3),
 			new TetrisPiece(4),
 			new TetrisPiece(5),
-			new TetrisPiece(6)
+			new TetrisPiece(6),
+			new TetrisPiece(7)
 		];
 		this.gameBoard = new GameBoard(this.rows, this.cols);
 		this.gameBoard.init();

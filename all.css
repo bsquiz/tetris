@@ -15,6 +15,18 @@
 .triangle-right {
 	clip-path: polygon(50% 0%, 50% 100%, 100% 50%);
 }
+#startScreen {
+	max-width: 600px;
+}
+.logo-image .wall, .spire-top::before, .spire-top::after {
+	border: solid thin black;
+}
+.logo-image h1 {
+	font-size: 3em;
+	margin: 5px;
+	position: absolute;
+	color: black;
+}
 .logo-image .window {
 	background: black;
 	border-radius: 50% 50% 0 0;
@@ -23,17 +35,36 @@
 	flex: 1;
 	display: flex;
 }
+.spires.background {
+        position: relative;
+        height: 0%;
+	top: -110px;
+}
+.spires.background .spire-body,
+	.spires.background .spire-body::before,
+	.spires.background .spire-body::after,
+	.spires.background .spire-top,
+	.spires.background .cross {
+        background: black;
+	border: 0;
+}
 .spire {
         width: 50px;
         height: 150px;
         margin-left: 2%;
+	margin-top: 5px;
+}
+.spires.background .spire {
+	height: 50px;
+	width: 17px;
 }
 .logo-image .wall {
-	width: 100%;
-	height: 20px;
+	margin-left: 50%;
+	width: 50%;
+	height: 30px;
 	margin-top: -27px;
 	position: relative;
-        background-color: #0033cc;
+        background-color: #36c;
 	display: flex;
 }
 .wall .window {
@@ -44,25 +75,7 @@
 }
 .spires.foreground {
 	flex-direction: row-reverse;
-}
-.spires.background {
-	padding-left: 25%;
-	margin-bottom: -34%;
-}
-.spires.background::after {
-	background: gray;
-	border-radius: 50% 0 0 0;
-	height: 35%;
-}
-.spires.background .spire div,
-.spires.background .spire-body::before,
-.spires.background .spire-body::after {
-	background: gray !important;
-	border-color: gray !important;
-}
-.spires.background .spire {
-	width: 25px;
-	height: 75px;
+	background: linear-gradient(0deg, #d53369 0%, #daae51 100%);
 }
 
 .spire-top {
@@ -105,17 +118,17 @@
 	linear-gradient(155deg, #C90032 10px, transparent 10px);
 }
 .spire-top.half-rhombus {
-background: #36c;
-background:
-linear-gradient(115deg, transparent 75%, rgba(255,255,255,.8) 75%) 0 0,
-linear-gradient(245deg, transparent 75%, rgba(255,255,255,.8) 75%) 0 0,
-linear-gradient(115deg, transparent 75%, rgba(255,255,255,.8) 75%) 7px -15px,
-linear-gradient(245deg, transparent 75%, rgba(255,255,255,.8) 75%) 7px -15px,
-#36c;
-background-size: 13px 30px;
+	background: #36c;
+	background:
+	linear-gradient(115deg, transparent 75%, rgba(255,255,255,.8) 75%) 0 0,
+	linear-gradient(245deg, transparent 75%, rgba(255,255,255,.8) 75%) 0 0,
+	linear-gradient(115deg, transparent 75%, rgba(255,255,255,.8) 75%) 7px -15px,
+	linear-gradient(245deg, transparent 75%, rgba(255,255,255,.8) 75%) 7px -15px,
+	#36c;
+	background-size: 13px 30px;
 }
 .spire-body {
-        background-color: #0033cc;
+        background-color: #36c;
         width: 50%;
         height: 40%;
         border-top: solid thin;
@@ -137,13 +150,15 @@ background-size: 13px 30px;
         top: 5%;
 }
 .spire-body::before {
-        background-color: #001a66;
+        background-color: #1E3D7B;
         left: -50%;
+	border-right: 0;
 }
 .spire-body::after {
-        background-color: #1a53ff;
+        background-color: #2954AA;
         left: 100%;
         z-index: -1;
+	border-left: 0;
 }
 .spire-body .window {
 	position: absolute;
@@ -198,10 +213,10 @@ background-size: 13px 30px;
 /* light #555555 */
 /* lightest #999999 */
 body {
-	background: #292929;
 	color: white;
 	font-family: 'Bebas Neue', sans-serif;
 	margin: 0;
+	background: black;
 }
 button {
 	border: none;
@@ -226,6 +241,7 @@ button:hover {
 }
 .solid-background {
 	background: #111111;
+	border: solid thin #333;
 }
 .gray-background {
 	background-color: #333333;
@@ -239,7 +255,6 @@ button:hover {
 .disabled {
 	background: gray;
 }	
-
 .w-3 {
 	width: 30%;
 }
@@ -258,10 +273,7 @@ button:hover {
 }
 
 /* padding */
-.p-less {
-	padding: 5px;
-}
-.padding-less {
+.p-sm {
 	padding: 5px;
 }
 .p-l-less {
@@ -272,25 +284,37 @@ button:hover {
 }
 /* margin */
 .m-t-m {
-	margin: 15px 0 0 0;
+	margin-top: 15px;
+}
+.m-t-sm {
+	margin-top: 5px;
 }
 .m-y-xl {
-	margin: 30px 0 30px 0;
+	margin-top: 30px;
+	margin-bottom: 30px;
 }
-.m-x-less {
+.m-y-sm {
+	margin-top: 5px;
+	margin-bottom: 5px;
+}
+.m-y-0 {
+	margin-top: 0;
+	margin-bottom: 0;
+}
+.m-x-sm {
 	margin-left: 5px;
 	margin-right: 5px;
 }
-.m-l-less {
+.m-l-sm {
 	margin-left: 5px;
 }
-.m-less {
+.m-sm {
 	margin: 5px;
 }
-.margin-auto {
+.m-auto {
 	margin: auto;
 }
-.margin-bottom {
+.m-b-sm {
 	margin-bottom: 5px;
 }
 .mt-0 {
@@ -329,6 +353,9 @@ button:hover {
 	display: inline-block;
 }
 .d-sm-none {
+	display: block;
+}
+.d-md-none {
 	display: none;
 }
 .hide {
@@ -338,6 +365,7 @@ button:hover {
 .toggle-button {
 	height: 25px;
 	width: 25px;
+	border: solid thin;
 }
 .dpad-row {
 	height: 10%;
@@ -346,9 +374,9 @@ button:hover {
 .modal {
 	position: absolute;
 	top: 50px;
+	left: 40%;
 	padding: 5px;
-	margin-left: 25px;
-	width: 200px;
+	width: 300px;
 }
 .modal .header {
 	margin: -5px;
@@ -357,8 +385,9 @@ button:hover {
 	z-index: 1;
 }
 #game {
-	height: 90%;
+	max-width: 400px;
 }
+
 #gameCanvas {
 	position: absolute;
 	left: 0;
@@ -370,10 +399,16 @@ button:hover {
 		margin-bottom: 5px;
 	}
 	.d-sm-none {
+		display: none;
+	}
+	.d-md-none {
 		display: block;
 	}
 	.m-sm-0 {
 		margin: 0;
+	}
+	.full-height-sm {
+		height: 100%;
 	}
 	.canvas-wrapper {
 		height: 100%;
@@ -384,10 +419,6 @@ button:hover {
 		top: 0;
 		left: 0;
 		margin-left: 0;
-	}
-	.modal button {
-		margin: 0 5% 0 5%;
-		font-size: 3em;
 	}
 	.toggle-button {
 		width: 100%;

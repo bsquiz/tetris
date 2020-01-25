@@ -233,6 +233,51 @@ class TetrisPiece {
 					]
 				];
 			break;
+			case Tetris.PieceTypes.BACKWARDS_L:
+				//   [] 
+				//   [] 
+				// [][] <- origin
+				this.ogOrigin = [2,5];
+				this.transform = [
+					[0,0],
+					[0,-1],
+					[-1,0],
+					[-2,0]
+				];
+				this.rotations = [
+					//   [] 
+					//   [] 
+					// [][]
+					[
+						[0,0],
+						[0,-1],
+						[-1,0],
+						[-2,0]	
+					],[
+						// []
+						// [][][]
+						[0,0],
+						[0,1],
+						[0,2],
+						[-1,0]
+					],[
+						// [][]
+						// []
+						// []
+						[0,0],
+						[0,1],
+						[1,0],
+						[2,0]
+					],[
+						// [][][]
+						//     []
+						[0,0],
+						[0,-1],
+						[0,-2],
+						[1,0]
+					]
+				];
+			break;
 			case Tetris.PieceTypes.TRIANGLE:
 				//   []
 				// [][][] <-- origin is middle block

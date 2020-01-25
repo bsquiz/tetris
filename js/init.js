@@ -64,50 +64,66 @@ function addGameEventListeners() {
 	const $musicToggleButton = $('musicToggleButton');
 	const $pauseToggleButton = $('pauseToggleButton');
 	const $sfxToggleButton = $('sfxToggleButton');
+	const $gameCanvas = $('gameCanvas');
 
-	$on($leftBtn, "touchstart", function(e) {
+	$on($gameCanvas, "touchstart", e => {
 		e.preventDefault();
-		Tetris.setKeyDown(Tetris.Keys.LEFT, true);
-	});
-	$on($leftBtn, "touchend", function(e) {
-		e.preventDefault();
-		Tetris.setKeyDown(Tetris.Keys.LEFT, false);
-	});
 
-	$on($rightBtn, "touchstart", function(e) {
-		e.preventDefault();
-		Tetris.setKeyDown(Tetris.Keys.RIGHT, true);
-	});
-	$on($rightBtn, "touchend", function(e) {
-		e.preventDefault();
-		Tetris.setKeyDown(Tetris.Keys.RIGHT, false);
-	});
-
-	$on($rotateBtn, "touchstart", function(e) {
-		e.preventDefault();
-		Tetris.setKeyDown(Tetris.Keys.UP, true);
-	});
-	$on($rotateBtn, "touchend", function(e) {
-		e.preventDefault();
+		Tetris.touchControls = true;
+		Tetris.touchStartX = e.touches[0].pageX;
+		Tetris.touchStartY = e.touches[0].pageY;
+		Tetris.touchStartDropY = e.touches[0].pageY;
+		Tetris.shouldTouchRotate = true;
 		Tetris.setKeyDown(Tetris.Keys.UP, false);
-	});
-
-	$on($dropBtn, "touchstart", function(e) {
-		e.preventDefault();
-		Tetris.setKeyDown(Tetris.Keys.DOWN, true);
-	});
-	$on($dropBtn, "touchend", function(e) {
-		e.preventDefault();
-		Tetris.setKeyDown(Tetris.Keys.DOWN, false);
-	});
-
-	$on($hardDropBtn, "touchstart", function(e) {
-		e.preventDefault();
-		Tetris.setKeyDown(Tetris.Keys.SPACE, true);
-	});
-	$on($hardDropBtn, "touchend", function(e) {
-		e.preventDefault();
 		Tetris.setKeyDown(Tetris.Keys.SPACE, false);
+	});
+	
+	$on($gameCanvas, "touchmove", e => {
+		const x = e.touches[0].pageX;
+		const y = e.touches[0].pageY;
+		const diffX = x - Tetris.touchStartX;
+		const diffY = y - Tetris.touchStartY;
+
+		if (Math.abs(diffX) > Tetris.dragThreshold) {
+			Tetris.touchStartX = x;
+
+			if (diffX < 0) {
+				Tetris.setKeyDown(Tetris.Keys.LEFT, true);	
+			} else {
+				Tetris.setKeyDown(Tetris.Keys.RIGHT, true);	
+			}
+			Tetris.shouldTouchRotate = false;
+		}
+
+		if (Math.abs(diffY) > Tetris.dragThreshold) {
+			Tetris.touchStartY = y;
+
+			if (diffY > 0) {
+				Tetris.setKeyDown(Tetris.Keys.DOWN, true);
+			}
+
+			Tetris.shouldTouchRotate = false;
+		}
+	
+	});
+
+	$on($gameCanvas, "touchend", e => {
+		Tetris.setKeyDown(Tetris.Keys.LEFT, false);
+		Tetris.setKeyDown(Tetris.Keys.RIGHT, false);
+		Tetris.setKeyDown(Tetris.Keys.DOWN, false);
+
+		/* swipe down check */
+		if (
+			Math.abs(
+				Tetris.touchStartDropY - Tetris.touchStartY
+			) > Tetris.dragThreshold * 4
+			) {
+				Tetris.setKeyDown(Tetris.Keys.SPACE, true);
+		}
+
+		if (Tetris.shouldTouchRotate) {
+			Tetris.setKeyDown(Tetris.Keys.UP, true);
+		}
 	});
 
 	$on($musicToggleButton, "click", toggleMusic);
@@ -124,7 +140,9 @@ function addGameEventListeners() {
 function startGame() {
 	Tetris.init();
 	Tetris.start();
-	$addClass($('startScreen'), 'hide');
+	TetrisSoundEffects.mute();
+	document.getElementsByTagName('body')[0].removeChild($('startScreen'));
+	$removeClass($('game'), 'hide');
 
 	window.requestAnimationFrame(updateGame);
 }

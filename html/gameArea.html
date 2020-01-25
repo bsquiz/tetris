@@ -1,6 +1,21 @@
-<div class="flex m-less" id="game">
+<div class="text-center full-height-sm m-auto m-t-sm flex hide" id="game">
+	<table class="p-sm solid-background">
+		<tr>
+			<td>Score </td>
+			<td id="scoreVal">0</td>
+		</tr>
+		<tr>
+			<td>Level </td>
+			<td id="levelVal">0</td>
+		</tr>
+		<tr>
+			<td>Lines </td>
+			<td id="linesVal">0</td>
+		</tr>
+	</table>
+
 	<!-- draw area -->
-	<div class="canvas-wrapper d-relative solid-border solid-background">
+	<div class="m-x-sm canvas-wrapper d-relative solid-background">
 		<canvas
 			id="backgroundCanvas"
 			class="full-width full-height"
@@ -13,47 +28,29 @@
 			height="600"></canvas>
 	</div>
 
-	<!-- HUD --> 
-	<div class="m-l-less text-center">
-		<div class="p-less solid-border solid-background">
-			<table>
-				<tr>
-					<td>Score </td>
-					<td id="scoreVal">0</td>
-				</tr>
-				<tr>
-					<td>Level </td>
-					<td id="levelVal">0</td>
-				</tr>
-				<tr>
-					<td>Lines </td>
-					<td id="linesVal">0</td>
-				</tr>
-			</table>
+	<div>
+		<div class="solid-background">
+			<div>Next</div>
+			<canvas id="nextPieceCanvas" width="80" height="100"></canvas>
 		</div>
 
-		<div class="solid-border margin-bottom solid-background">
-			<div>Next</div>
-				<canvas id="nextPieceCanvas" width="80" height="100"></canvas>
-			</div>
-			<!-- menu buttons -->
-			<div class="text-left">
-				<button
-					id="pauseToggleButton"
-					class="toggle-button text-xl">
-					&blacktriangleright;
-				</button>
-				<button
-					id="musicToggleButton"
-					class="toggle-button text-xl disabled">
-					&sung;
-				</button>
-				<button
-					id="sfxToggleButton"
-					class="toggle-button text-xl">
-					<)
-				</button>
-			</div>
+		<!-- menu buttons -->
+		<div class="m-t-sm">
+			<button
+				id="pauseToggleButton"
+				class="toggle-button text-xl">
+				&blacktriangleright;
+			</button>
+			<button
+				id="musicToggleButton"
+				class="toggle-button text-xl disabled">
+				&sung;
+			</button>
+			<button
+				id="sfxToggleButton"
+				class="toggle-button text-xl disabled">
+				<)
+			</button>
 		</div>
 	</div>
 </div>

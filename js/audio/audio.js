@@ -8,6 +8,12 @@ const BAudio = {
 		SAWTOOTH: "sawtooth",
 		NOISE: "noise"
 	},
+	loadAudioFile(filename) {
+		const snd = document.createElement('audio');
+	
+		snd.src = filename;	
+		return snd;
+	},
 	createNoiseOutput() {
 		const real = new Float32Array(2);
 		const imag = new Float32Array(2);

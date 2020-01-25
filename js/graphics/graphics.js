@@ -152,12 +152,13 @@ const TetrisGraphics = {
 		this.ctx.fillStyle = this.Colors.WHITE;
 
 		this.PieceColors[Tetris.PieceTypes.EMPTY] = "black";
-		this.PieceColors[Tetris.PieceTypes.SQUARE] = "red";
-		this.PieceColors[Tetris.PieceTypes.L] = "green";
-		this.PieceColors[Tetris.PieceTypes.LINE] = "blue";
-		this.PieceColors[Tetris.PieceTypes.Z] = "yellow";
+		this.PieceColors[Tetris.PieceTypes.SQUARE] = "yellow";
+		this.PieceColors[Tetris.PieceTypes.L] = "blue";
+		this.PieceColors[Tetris.PieceTypes.BACKWARDS_L] = "orange";
+		this.PieceColors[Tetris.PieceTypes.LINE] = "teal";
+		this.PieceColors[Tetris.PieceTypes.Z] = "green";
 		this.PieceColors[Tetris.PieceTypes.TRIANGLE] = "purple";
-		this.PieceColors[Tetris.PieceTypes.S] = "orange"
+		this.PieceColors[Tetris.PieceTypes.S] = "darkSlateBlue"
 
 		this.drawBackground(rows, cols, this.colWidth, this.colHeight);
 		TetrisHUD.init();

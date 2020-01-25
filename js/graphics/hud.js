@@ -19,7 +19,7 @@ const TetrisHUD = {
 
 			
 		// fixes drawing starting offset
-		if (type === Tetris.PieceTypes.L) {
+		if (type === Tetris.PieceTypes.L || type === Tetris.PieceTypes.BACKWARDS_L) {
 			paddingY = 60;
 		} else if (type === Tetris.PieceTypes.LINE) {
 			paddingY = 60;
@@ -32,6 +32,10 @@ const TetrisHUD = {
 			paddingX = 27;
 			paddingY = 40;
 		} 
+		
+		if (type === Tetris.PieceTypes.BACKWARDS_L) {
+			paddingX = 27;
+		}
 
 		this.nextPieceCtx.beginPath();
  
